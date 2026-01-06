@@ -12,6 +12,7 @@ import ProtectedRoute from "@/components/layout/ProtectedRoute";
 // Pages - Lazy loaded
 const Auth = lazy(() => import("@/pages/Auth"));
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
+const TaxFiling = lazy(() => import("@/pages/TaxFiling"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 // Loading fallback
@@ -47,6 +48,7 @@ const App = () => (
               }
             >
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/tax-filing" element={<TaxFiling />} />
               {/* Placeholder routes - will be built in next phases */}
               <Route path="/tax-filing" element={<div className="p-10"><h1 className="text-2xl font-bold">Tax Filing - Coming in Phase 4</h1></div>} />
               <Route path="/track" element={<div className="p-10"><h1 className="text-2xl font-bold">Track Filing - Coming in Phase 5</h1></div>} />
