@@ -1,10 +1,35 @@
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
 import * as Icons from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Step } from "@/hooks/useTaxFiling";
 import { useState } from "react";
 
+const stepItemVariants: Variants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: (i: number) => ({
+    opacity: 1,
+    x: 0,
+    transition: {
+      delay: i * 0.1,
+      duration: 0.4,
+      ease: [0.25, 0.46, 0.45, 0.94]
+    }
+  })
+};
+
+const subStepVariants: Variants = {
+  hidden: { opacity: 0, x: -10 },
+  visible: (i: number) => ({
+    opacity: 1,
+    x: 0,
+    transition: {
+      delay: i * 0.05,
+      duration: 0.3,
+      ease: "easeOut"
+    }
+  })
+};
 interface TaxFilingStepperProps {
   steps: Step[];
   currentStepIndex: number;
@@ -63,7 +88,11 @@ export function TaxFilingStepper({
       </div>
 
       {/* Steps */}
-      <div className="space-y-2">
+      <motion.div 
+        className="space-y-2"
+        initial="hidden"
+        animate="visible"
+      >
         {steps.map((step, stepIndex) => {
           const Icon = getIcon(step.icon);
           const status = getStepStatus(stepIndex);
@@ -71,7 +100,12 @@ export function TaxFilingStepper({
           const hasSubSteps = step.subSteps.length > 1;
 
           return (
-            <div key={step.id} className="rounded-lg overflow-hidden">
+            <motion.div 
+              key={step.id} 
+              className="rounded-lg overflow-hidden"
+              custom={stepIndex}
+              variants={stepItemVariants}
+            >
               {/* Step Header */}
               <motion.button
                 className={cn(
@@ -211,10 +245,10 @@ export function TaxFilingStepper({
                   </div>
                 </motion.div>
               )}
-            </div>
+            </motion.div>
           );
         })}
-      </div>
+      </motion.div>
     </div>
   );
 }

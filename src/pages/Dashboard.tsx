@@ -25,6 +25,7 @@ import { GradientButton } from "@/components/ui/GradientButton";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
+import { AnimatedList, AnimatedGrid } from "@/components/ui/AnimatedList";
 import { useAuth } from "@/hooks/useAuth";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { fadeInUp, staggerContainer, cardHover } from "@/lib/animations";
@@ -55,6 +56,16 @@ interface ActivityItem {
   description: string;
   time: string;
   icon: React.ElementType;
+}
+
+interface StatItem {
+  label: string;
+  value: number;
+  icon: React.ElementType;
+  color: string;
+  bgColor: string;
+  prefix?: string;
+  change?: string | null;
 }
 
 const quickActions: QuickAction[] = [
@@ -158,6 +169,42 @@ export default function Dashboard() {
       case "info": return "bg-accent/30 text-secondary";
     }
   };
+
+  const stats: StatItem[] = [
+    { 
+      label: "Filings In Progress", 
+      value: hasInProgressFiling ? 1 : 0, 
+      icon: Clock, 
+      color: "text-amber-500",
+      bgColor: "bg-amber-500/10",
+      change: null
+    },
+    { 
+      label: "Completed Filings", 
+      value: 0, 
+      icon: CheckCircle2, 
+      color: "text-primary",
+      bgColor: "bg-primary/10",
+      change: null
+    },
+    { 
+      label: "Tax Year", 
+      value: 2024, 
+      icon: TrendingUp, 
+      color: "text-secondary",
+      bgColor: "bg-secondary/10",
+      change: null
+    },
+    { 
+      label: "Potential Savings", 
+      value: 0, 
+      icon: Sparkles, 
+      color: "text-accent",
+      bgColor: "bg-accent/10",
+      prefix: "PKR ",
+      change: "Calculate now"
+    },
+  ];
 
   return (
     <div className="min-h-screen pb-10">
@@ -278,75 +325,42 @@ export default function Dashboard() {
       <div className="px-6 md:px-10 -mt-6">
         {/* Stats Cards */}
         <motion.section
-          variants={staggerContainer}
           initial="hidden"
           animate="visible"
           className="mb-10"
         >
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              { 
-                label: "Filings In Progress", 
-                value: hasInProgressFiling ? 1 : 0, 
-                icon: Clock, 
-                color: "text-amber-500",
-                bgColor: "bg-amber-500/10",
-                change: null
-              },
-              { 
-                label: "Completed Filings", 
-                value: 0, 
-                icon: CheckCircle2, 
-                color: "text-primary",
-                bgColor: "bg-primary/10",
-                change: null
-              },
-              { 
-                label: "Tax Year", 
-                value: 2024, 
-                icon: TrendingUp, 
-                color: "text-secondary",
-                bgColor: "bg-secondary/10",
-                change: null
-              },
-              { 
-                label: "Potential Savings", 
-                value: 0, 
-                icon: Sparkles, 
-                color: "text-accent",
-                bgColor: "bg-accent/10",
-                prefix: "PKR ",
-                change: "Calculate now"
-              },
-            ].map((stat, index) => (
-              <motion.div key={stat.label} variants={fadeInUp} custom={index}>
-                <motion.div
-                  variants={cardHover}
-                  initial="rest"
-                  whileHover="hover"
-                  whileTap="tap"
-                >
-                  <GlassCard className="p-5 h-full" interactive animate={false}>
-                    <div className="flex items-start justify-between mb-3">
-                      <div className={cn("p-2 rounded-lg", stat.bgColor)}>
-                        <stat.icon className={cn("h-5 w-5", stat.color)} />
-                      </div>
-                      {stat.change && (
-                        <span className="text-xs text-primary font-medium hover:underline cursor-pointer">
-                          {stat.change}
-                        </span>
-                      )}
+          <AnimatedGrid
+            items={stats}
+            keyExtractor={(stat) => stat.label}
+            className="grid grid-cols-2 lg:grid-cols-4 gap-4"
+            staggerDelay={0.06}
+            renderItem={(stat) => (
+              <motion.div
+                variants={cardHover}
+                initial="rest"
+                whileHover="hover"
+                whileTap="tap"
+              >
+                <GlassCard className="p-5 h-full" interactive animate={false}>
+                  <div className="flex items-start justify-between mb-3">
+                    <div className={cn("p-2 rounded-lg", stat.bgColor)}>
+                      <stat.icon className={cn("h-5 w-5", stat.color)} />
                     </div>
-                    <p className="text-sm text-muted-foreground mb-1">{stat.label}</p>
-                    <p className="text-2xl font-bold text-foreground">
-                      {stat.prefix && <span className="text-lg">{stat.prefix}</span>}
-                      <AnimatedCounter value={stat.value} />
-                    </p>
-                  </GlassCard>
-                </motion.div>
+                    {stat.change && (
+                      <span className="text-xs text-primary font-medium hover:underline cursor-pointer">
+                        {stat.change}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-1">{stat.label}</p>
+                  <p className="text-2xl font-bold text-foreground">
+                    {stat.prefix && <span className="text-lg">{stat.prefix}</span>}
+                    <AnimatedCounter value={stat.value} />
+                  </p>
+                </GlassCard>
               </motion.div>
-            ))}
-          </div>
+            )}
+          />
         </motion.section>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -354,7 +368,6 @@ export default function Dashboard() {
           <div className="lg:col-span-2 space-y-8">
             {/* Quick Actions */}
             <motion.section
-              variants={staggerContainer}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-50px" }}
@@ -363,57 +376,54 @@ export default function Dashboard() {
                 <h2 className="text-xl font-semibold text-foreground">Quick Actions</h2>
               </motion.div>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {quickActions.map((action, index) => (
-                  <motion.div
-                    key={action.title}
-                    variants={fadeInUp}
-                    custom={index}
-                  >
-                    <Link to={action.href} className="block h-full">
-                      <motion.div
-                        className="group h-full"
-                        variants={cardHover}
-                        initial="rest"
-                        whileHover="hover"
-                        whileTap="tap"
+              <AnimatedGrid
+                items={quickActions}
+                keyExtractor={(action) => action.title}
+                className="grid grid-cols-1 md:grid-cols-3 gap-4"
+                staggerDelay={0.1}
+                renderItem={(action) => (
+                  <Link to={action.href} className="block h-full">
+                    <motion.div
+                      className="group h-full"
+                      variants={cardHover}
+                      initial="rest"
+                      whileHover="hover"
+                      whileTap="tap"
+                    >
+                      <GlassCard 
+                        variant="gradient" 
+                        interactive 
+                        animate={false}
+                        className="p-5 h-full relative overflow-hidden"
                       >
-                        <GlassCard 
-                          variant="gradient" 
-                          interactive 
-                          animate={false}
-                          className="p-5 h-full relative overflow-hidden"
-                        >
-                          {action.popular && (
-                            <div className="absolute top-3 right-3">
-                              <span className="px-2 py-0.5 text-xs rounded-full bg-primary text-primary-foreground font-medium">
-                                Popular
-                              </span>
-                            </div>
-                          )}
-                          <div className={cn(
-                            "w-11 h-11 rounded-xl bg-gradient-to-br flex items-center justify-center mb-4",
-                            "group-hover:scale-110 transition-transform duration-300",
-                            action.gradient
-                          )}>
-                            <action.icon className="h-5 w-5 text-primary-foreground" />
+                        {action.popular && (
+                          <div className="absolute top-3 right-3">
+                            <span className="px-2 py-0.5 text-xs rounded-full bg-primary text-primary-foreground font-medium">
+                              Popular
+                            </span>
                           </div>
-                          <h3 className="font-semibold text-foreground mb-1.5">{action.title}</h3>
-                          <p className="text-sm text-muted-foreground line-clamp-2">{action.description}</p>
-                          <div className="mt-3 flex items-center text-primary text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                            Get Started <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                          </div>
-                        </GlassCard>
-                      </motion.div>
-                    </Link>
-                  </motion.div>
-                ))}
-              </div>
+                        )}
+                        <div className={cn(
+                          "w-11 h-11 rounded-xl bg-gradient-to-br flex items-center justify-center mb-4",
+                          "group-hover:scale-110 transition-transform duration-300",
+                          action.gradient
+                        )}>
+                          <action.icon className="h-5 w-5 text-primary-foreground" />
+                        </div>
+                        <h3 className="font-semibold text-foreground mb-1.5">{action.title}</h3>
+                        <p className="text-sm text-muted-foreground line-clamp-2">{action.description}</p>
+                        <div className="mt-3 flex items-center text-primary text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                          Get Started <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </GlassCard>
+                    </motion.div>
+                  </Link>
+                )}
+              />
             </motion.section>
 
             {/* Services Grid */}
             <motion.section
-              variants={staggerContainer}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-50px" }}
@@ -425,56 +435,54 @@ export default function Dashboard() {
                 </Link>
               </motion.div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {services.map((service, index) => (
-                  <motion.div
-                    key={service.title}
-                    variants={fadeInUp}
-                    custom={index}
+              <AnimatedGrid
+                items={services}
+                keyExtractor={(service) => service.title}
+                className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                staggerDelay={0.08}
+                renderItem={(service) => (
+                  <Link 
+                    to={service.disabled ? "#" : service.href} 
+                    className={cn("block", service.disabled && "cursor-not-allowed")}
+                    onClick={(e) => service.disabled && e.preventDefault()}
                   >
-                    <Link 
-                      to={service.disabled ? "#" : service.href} 
-                      className={cn("block", service.disabled && "cursor-not-allowed")}
-                      onClick={(e) => service.disabled && e.preventDefault()}
+                    <motion.div
+                      className="group"
+                      variants={service.disabled ? {} : cardHover}
+                      initial="rest"
+                      whileHover={service.disabled ? undefined : "hover"}
                     >
-                      <motion.div
-                        className="group"
-                        variants={service.disabled ? {} : cardHover}
-                        initial="rest"
-                        whileHover={service.disabled ? undefined : "hover"}
+                      <GlassCard 
+                        className={cn(
+                          "p-4 flex items-center gap-4",
+                          service.disabled && "opacity-60"
+                        )}
+                        interactive={!service.disabled}
+                        animate={false}
                       >
-                        <GlassCard 
-                          className={cn(
-                            "p-4 flex items-center gap-4",
-                            service.disabled && "opacity-60"
-                          )}
-                          interactive={!service.disabled}
-                          animate={false}
-                        >
-                          <div className="w-10 h-10 rounded-lg bg-muted/50 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/10 transition-colors">
-                            <service.icon className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                        <div className="w-10 h-10 rounded-lg bg-muted/50 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/10 transition-colors">
+                          <service.icon className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-medium text-foreground text-sm">{service.title}</h3>
+                            {service.badge && (
+                              <span className="px-2 py-0.5 text-xs rounded-full bg-accent/30 text-secondary font-medium">
+                                {service.badge}
+                              </span>
+                            )}
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <h3 className="font-medium text-foreground text-sm">{service.title}</h3>
-                              {service.badge && (
-                                <span className="px-2 py-0.5 text-xs rounded-full bg-accent/30 text-secondary font-medium">
-                                  {service.badge}
-                                </span>
-                              )}
-                            </div>
-                            <p className="text-xs text-muted-foreground truncate">{service.description}</p>
-                          </div>
-                          <ChevronRight className={cn(
-                            "h-4 w-4 text-muted-foreground flex-shrink-0 transition-transform",
-                            !service.disabled && "group-hover:translate-x-1 group-hover:text-primary"
-                          )} />
-                        </GlassCard>
-                      </motion.div>
-                    </Link>
-                  </motion.div>
-                ))}
-              </div>
+                          <p className="text-xs text-muted-foreground truncate">{service.description}</p>
+                        </div>
+                        <ChevronRight className={cn(
+                          "h-4 w-4 text-muted-foreground flex-shrink-0 transition-transform",
+                          !service.disabled && "group-hover:translate-x-1 group-hover:text-primary"
+                        )} />
+                      </GlassCard>
+                    </motion.div>
+                  </Link>
+                )}
+              />
             </motion.section>
           </div>
 
@@ -482,7 +490,6 @@ export default function Dashboard() {
           <div className="space-y-6">
             {/* Recent Activity */}
             <motion.section
-              variants={staggerContainer}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-50px" }}
@@ -495,14 +502,15 @@ export default function Dashboard() {
               </motion.div>
 
               <GlassCard className="p-4">
-                <div className="space-y-4">
-                  {recentActivities.map((activity, index) => (
-                    <motion.div
-                      key={activity.id}
-                      className="flex gap-3"
-                      variants={fadeInUp}
-                      custom={index}
-                    >
+                <AnimatedList
+                  items={recentActivities}
+                  keyExtractor={(activity) => activity.id}
+                  staggerDelay={0.1}
+                  showGradients={recentActivities.length > 3}
+                  className="max-h-64"
+                  itemClassName="mb-4 last:mb-0"
+                  renderItem={(activity) => (
+                    <div className="flex gap-3">
                       <div className={cn(
                         "w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0",
                         getActivityIcon(activity.type)
@@ -514,9 +522,9 @@ export default function Dashboard() {
                         <p className="text-xs text-muted-foreground line-clamp-2">{activity.description}</p>
                         <p className="text-xs text-muted-foreground/60 mt-1">{activity.time}</p>
                       </div>
-                    </motion.div>
-                  ))}
-                </div>
+                    </div>
+                  )}
+                />
 
                 {recentActivities.length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">

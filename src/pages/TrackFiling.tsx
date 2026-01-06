@@ -5,10 +5,10 @@ import { Button } from '@/components/ui/button';
 import { FilingCard, Filing } from '@/components/track/FilingCard';
 import { FilingFilters } from '@/components/track/FilingFilters';
 import { FilingStatus } from '@/components/track/StatusTimeline';
+import { AnimatedList, AnimatedGrid } from '@/components/ui/AnimatedList';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { staggerContainer, fadeInUp } from '@/lib/animations';
-
 // Mock data - in real app, this would come from API/database
 const mockFilings: Filing[] = [
   {
@@ -235,23 +235,26 @@ const TrackFiling = () => {
       </motion.div>
 
       {/* Stats summary cards */}
-      <motion.div variants={fadeInUp} className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {[
+      <AnimatedGrid
+        items={[
           { label: 'Total Filings', value: stats.total, color: 'bg-primary/10 text-primary' },
           { label: 'Pending', value: stats.pending, color: 'bg-amber-500/10 text-amber-600' },
           { label: 'Processing', value: stats.processing, color: 'bg-purple-500/10 text-purple-600' },
           { label: 'Completed', value: stats.completed, color: 'bg-emerald-500/10 text-emerald-600' },
-        ].map((stat) => (
+        ]}
+        keyExtractor={(stat) => stat.label}
+        className="grid grid-cols-2 sm:grid-cols-4 gap-3"
+        staggerDelay={0.06}
+        renderItem={(stat) => (
           <motion.div
-            key={stat.label}
             whileHover={{ scale: 1.02 }}
             className={`p-4 rounded-lg ${stat.color} transition-colors`}
           >
             <p className="text-2xl font-bold">{stat.value}</p>
             <p className="text-sm opacity-80">{stat.label}</p>
           </motion.div>
-        ))}
-      </motion.div>
+        )}
+      />
 
       {/* Filters */}
       <motion.div variants={fadeInUp}>
@@ -270,52 +273,48 @@ const TrackFiling = () => {
       </motion.div>
 
       {/* Filing cards */}
-      <div className="space-y-4">
-        <AnimatePresence mode="popLayout">
-          {filteredFilings.length > 0 ? (
-            filteredFilings.map((filing, index) => (
-              <motion.div
-                key={filing.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ delay: index * 0.05 }}
-              >
-                <FilingCard filing={filing} onAction={handleFilingAction} />
-              </motion.div>
-            ))
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="flex flex-col items-center justify-center py-16 text-center"
-            >
-              <motion.div
-                animate={{ y: [0, -5, 0] }}
-                transition={{ repeat: Infinity, duration: 2 }}
-              >
-                <Inbox className="w-16 h-16 text-muted-foreground/50" />
-              </motion.div>
-              <h3 className="mt-4 text-lg font-medium text-foreground">No filings found</h3>
-              <p className="text-muted-foreground mt-1">
-                {activeFiltersCount > 0
-                  ? 'Try adjusting your filters'
-                  : "You haven't submitted any tax filings yet"}
-              </p>
-              {activeFiltersCount > 0 ? (
-                <Button variant="outline" onClick={handleClearFilters} className="mt-4">
-                  Clear Filters
-                </Button>
-              ) : (
-                <Button onClick={() => navigate('/tax-filing')} className="mt-4 gap-2">
-                  <Plus className="w-4 h-4" />
-                  Start Your First Filing
-                </Button>
-              )}
-            </motion.div>
+      {filteredFilings.length > 0 ? (
+        <AnimatedList
+          items={filteredFilings}
+          keyExtractor={(filing) => filing.id}
+          staggerDelay={0.05}
+          showGradients={filteredFilings.length > 5}
+          className="space-y-4"
+          exitAnimation
+          renderItem={(filing) => (
+            <FilingCard filing={filing} onAction={handleFilingAction} />
           )}
-        </AnimatePresence>
-      </div>
+        />
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center justify-center py-16 text-center"
+        >
+          <motion.div
+            animate={{ y: [0, -5, 0] }}
+            transition={{ repeat: Infinity, duration: 2 }}
+          >
+            <Inbox className="w-16 h-16 text-muted-foreground/50" />
+          </motion.div>
+          <h3 className="mt-4 text-lg font-medium text-foreground">No filings found</h3>
+          <p className="text-muted-foreground mt-1">
+            {activeFiltersCount > 0
+              ? 'Try adjusting your filters'
+              : "You haven't submitted any tax filings yet"}
+          </p>
+          {activeFiltersCount > 0 ? (
+            <Button variant="outline" onClick={handleClearFilters} className="mt-4">
+              Clear Filters
+            </Button>
+          ) : (
+            <Button onClick={() => navigate('/tax-filing')} className="mt-4 gap-2">
+              <Plus className="w-4 h-4" />
+              Start Your First Filing
+            </Button>
+          )}
+        </motion.div>
+      )}
     </motion.div>
   );
 };
