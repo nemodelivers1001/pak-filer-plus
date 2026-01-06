@@ -69,11 +69,11 @@ function QuantumDial({ value, onChange }: { value: TaxYear, onChange: (y: TaxYea
                     <motion.div
                         key={year}
                         className={cn(
-                            "absolute text-xs font-bold transition-all duration-300",
-                            isActive ? "text-[#FCD34D] scale-125 drop-shadow-[0_0_8px_rgba(252,211,77,0.6)]" : "text-[#0E552F]/40"
+                            "absolute text-[10px] font-black tracking-tighter transition-all duration-500",
+                            isActive ? "text-[#FCD34D] scale-150 drop-shadow-[0_0_10px_rgba(252,211,77,0.8)]" : "text-white/20"
                         )}
                         style={{
-                            transform: `rotate(${deg}deg) translateY(-100px) rotate(-${deg}deg)`,
+                            transform: `rotate(${deg}deg) translateY(-115px) rotate(-${deg}deg)`,
                             transformOrigin: "center center"
                         }}
                     >
@@ -100,7 +100,7 @@ export default function TaxCalculator() {
     const netSalary = annualIncome - taxLiability;
 
     return (
-        <div className="fixed inset-0 w-screen h-screen bg-[#0E552F] text-white overflow-hidden font-sans selection:bg-[#FCD34D] selection:text-[#0E552F] z-0">
+        <div className="fixed inset-0 w-screen h-screen bg-gradient-to-br from-[#0E552F] via-[#09331c] to-[#051a0f] text-white overflow-hidden font-sans selection:bg-[#FCD34D] selection:text-[#0E552F] z-0">
 
             {/* CSS to remove number spinners */}
             <style jsx>{`
@@ -116,7 +116,7 @@ export default function TaxCalculator() {
 
             {/* BACKGROUND */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] bg-[radial-gradient(circle_at_center,rgba(14,85,47,0.4)_0%,transparent_60%)] opacity-80" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] bg-[radial-gradient(circle_at_center,rgba(74,222,128,0.15)_0%,transparent_70%)] opacity-80" />
                 <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] mix-blend-overlay" />
             </div>
 
@@ -154,19 +154,10 @@ export default function TaxCalculator() {
                                         <Briefcase className="w-4 h-4 text-[#FCD34D]" />
                                         CAPITAL_FLOW
                                     </label>
-                                    <div className="flex bg-black/40 rounded-xl p-1 border border-white/10">
-                                        {['monthly', 'yearly'].map((m) => (
-                                            <button
-                                                key={m}
-                                                onClick={() => setMode(m as any)}
-                                                className={cn(
-                                                    "px-4 py-1.5 rounded-lg text-[10px] font-black transition-all",
-                                                    mode === m ? "bg-[#4ade80] text-black" : "text-white/30 hover:text-white"
-                                                )}
-                                            >
-                                                {m.toUpperCase()}
-                                            </button>
-                                        ))}
+                                    <div className="flex bg-black/40 rounded-xl p-1 border border-white/10 shadow-inner">
+                                        <div className="px-5 py-2 rounded-lg text-[10px] font-black bg-[#4ade80] text-black">
+                                            MONTHLY
+                                        </div>
                                     </div>
                                 </div>
 
