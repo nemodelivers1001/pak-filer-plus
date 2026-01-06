@@ -19,8 +19,17 @@ interface StepFormProps {
   isLastStep: boolean;
 }
 
+interface FormField {
+  name: string;
+  label: string;
+  type: string;
+  placeholder: string;
+  required?: boolean;
+  hint?: string;
+}
+
 // Form field configurations for each sub-step
-const formConfigs: Record<string, { fields: Array<{ name: string; label: string; type: string; placeholder: string; required?: boolean; hint?: string }> }> = {
+const formConfigs: Record<string, { fields: FormField[] }> = {
   'basic-info': {
     fields: [
       { name: 'fullName', label: 'Full Name (as per CNIC)', type: 'text', placeholder: 'Enter your full name', required: true },
@@ -225,7 +234,7 @@ const formConfigs: Record<string, { fields: Array<{ name: string; label: string;
 };
 
 // Default config for summary steps and any missing configs
-const defaultConfig = {
+const defaultConfig: { fields: FormField[] } = {
   fields: [
     { name: 'notes', label: 'Additional Notes', type: 'text', placeholder: 'Any additional information...' },
   ],
