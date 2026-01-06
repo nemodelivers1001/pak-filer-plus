@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
-import { 
-  FileText, 
-  Calculator, 
-  MapPin, 
+import {
+  FileText,
+  Users,
+  Calculator,
+  MapPin,
   ArrowRight,
   TrendingUp,
   Clock,
@@ -11,580 +12,581 @@ import {
   Receipt,
   User,
   Building2,
-  Bell,
-  Calendar,
-  ChevronRight,
   Zap,
   Shield,
-  Award
+  Award,
+  Star,
+  ChevronRight,
+  ArrowUpRight
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { MeshBackground } from "@/components/ui/MeshBackground";
-import { GlassCard, GlassCardHeader, GlassCardTitle, GlassCardDescription, GlassCardContent } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
 import { ProgressRing } from "@/components/ui/ProgressRing";
-import { ProgressBar } from "@/components/ui/ProgressBar";
 import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
-import { AnimatedList, AnimatedGrid } from "@/components/ui/AnimatedList";
+import { Magnetic } from "@/components/ui/Magnetic";
+import { TiltCard } from "@/components/ui/TiltCard"; // New Tilt Component
 import { useAuth } from "@/hooks/useAuth";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
-import { fadeInUp, staggerContainer, cardHover } from "@/lib/animations";
+import { fadeInUp, staggerContainer } from "@/lib/animations";
+import { fadeInUp, staggerContainer } from "@/lib/animations";
 import { cn } from "@/lib/utils";
+import { UnifiedBackground } from "@/components/layout/UnifiedBackground";
 
-interface QuickAction {
+// Brand Colors
+// Primary: #0E552F (pak-green-600)
+// Secondary: #45745B (pak-green-500)
+// Accent: #82A492 (pak-green-400)
+// Soft: #C5DACF (pak-green-200)
+
+interface ServiceItem {
   title: string;
   description: string;
   icon: React.ElementType;
   href: string;
-  gradient: string;
   popular?: boolean;
+  comingSoon?: boolean;
+  gridArea: string;
 }
 
-interface ServiceCard {
-  title: string;
-  description: string;
-  icon: React.ElementType;
-  href: string;
-  badge?: string;
-  disabled?: boolean;
-}
-
-interface ActivityItem {
-  id: string;
-  type: "filing" | "update" | "payment" | "info";
-  title: string;
-  description: string;
-  time: string;
-  icon: React.ElementType;
-}
-
-interface StatItem {
-  label: string;
-  value: number;
-  icon: React.ElementType;
-  color: string;
-  bgColor: string;
-  prefix?: string;
-  change?: string | null;
-}
-
-const quickActions: QuickAction[] = [
+// All PAK Filer Services with grid areas
+const services: ServiceItem[] = [
   {
-    title: "File Your Taxes",
-    description: "Start or continue your personal tax filing",
+    title: "Personal Tax Filing",
+    description: "File your individual income tax return with our step-by-step guided process. Quick, easy, and fully FBR compliant.",
     icon: FileText,
     href: "/tax-filing",
-    gradient: "from-primary to-secondary",
     popular: true,
+    gridArea: "hero",
   },
   {
-    title: "Track Filing",
-    description: "Check the status of your submissions",
-    icon: MapPin,
-    href: "/track",
-    gradient: "from-secondary to-accent",
+    title: "Family Tax Filing",
+    description: "File taxes for your entire family in one convenient place",
+    icon: Users,
+    href: "/tax-filing?type=family",
+    gridArea: "family",
   },
   {
     title: "Salary Calculator",
     description: "Calculate your tax liability instantly",
     icon: Calculator,
     href: "/calculator",
-    gradient: "from-accent to-soft",
+    gridArea: "calc",
   },
-];
-
-const services: ServiceCard[] = [
+  {
+    title: "Track Filing",
+    description: "Check submission status anytime",
+    icon: MapPin,
+    href: "/track",
+    gridArea: "track",
+  },
   {
     title: "IRIS Profile Update",
-    description: "Update your FBR IRIS profile information",
+    description: "Update your FBR IRIS profile easily",
     icon: User,
     href: "/iris-update",
+    gridArea: "iris",
   },
   {
     title: "NTN Registration",
-    description: "Get your National Tax Number",
+    description: "Get your National Tax Number from FBR",
     icon: Receipt,
     href: "/ntn-registration",
+    gridArea: "ntn",
   },
   {
     title: "GST Registration",
-    description: "Register for sales tax",
+    description: "Register for Sales Tax with FBR",
     icon: Receipt,
     href: "/gst-registration",
+    gridArea: "gst",
   },
   {
     title: "Business Incorporation",
-    description: "Register your company in Pakistan",
+    description: "Register your company with SECP",
     icon: Building2,
     href: "/business",
-    badge: "Coming Soon",
-    disabled: true,
-  },
-];
-
-const recentActivities: ActivityItem[] = [
-  {
-    id: "1",
-    type: "info",
-    title: "Welcome to PAK Filer!",
-    description: "Start your tax filing journey today",
-    time: "Just now",
-    icon: Sparkles,
-  },
-  {
-    id: "2",
-    type: "info",
-    title: "Tax Year 2024",
-    description: "Filing deadline approaching - File before September 30",
-    time: "Reminder",
-    icon: Calendar,
+    comingSoon: true,
+    gridArea: "business",
   },
 ];
 
 const features = [
-  { icon: Zap, label: "Fast Filing", description: "Complete in 15 minutes" },
-  { icon: Shield, label: "100% Secure", description: "Your data is protected" },
-  { icon: Award, label: "FBR Compliant", description: "Official standards" },
+  { icon: Zap, label: "15 Min Filing" },
+  { icon: Shield, label: "Bank-Level Security" },
+  { icon: Award, label: "FBR Certified" },
 ];
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const [taxFilingProgress] = useLocalStorage("pakfiler_tax_progress", { 
-    currentStep: 0, 
+  const [taxFilingProgress] = useLocalStorage("pakfiler_tax_progress", {
+    currentStep: 0,
     totalSteps: 8,
     lastUpdated: null as string | null
   });
 
-  const progressPercentage = taxFilingProgress.totalSteps > 0 
-    ? Math.round((taxFilingProgress.currentStep / taxFilingProgress.totalSteps) * 100) 
+  const progressPercentage = taxFilingProgress.totalSteps > 0
+    ? Math.round((taxFilingProgress.currentStep / taxFilingProgress.totalSteps) * 100)
     : 0;
 
   const hasInProgressFiling = taxFilingProgress.currentStep > 0;
 
-  const getActivityIcon = (type: ActivityItem["type"]) => {
-    switch (type) {
-      case "filing": return "bg-primary/20 text-primary";
-      case "update": return "bg-blue-500/20 text-blue-500";
-      case "payment": return "bg-amber-500/20 text-amber-500";
-      case "info": return "bg-accent/30 text-secondary";
+  // Stagger animation variant with more dramatic effect
+  const dramaticStagger = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
     }
   };
 
-  const stats: StatItem[] = [
-    { 
-      label: "Filings In Progress", 
-      value: hasInProgressFiling ? 1 : 0, 
-      icon: Clock, 
-      color: "text-amber-500",
-      bgColor: "bg-amber-500/10",
-      change: null
-    },
-    { 
-      label: "Completed Filings", 
-      value: 0, 
-      icon: CheckCircle2, 
-      color: "text-primary",
-      bgColor: "bg-primary/10",
-      change: null
-    },
-    { 
-      label: "Tax Year", 
-      value: 2024, 
-      icon: TrendingUp, 
-      color: "text-secondary",
-      bgColor: "bg-secondary/10",
-      change: null
-    },
-    { 
-      label: "Potential Savings", 
-      value: 0, 
-      icon: Sparkles, 
-      color: "text-accent",
-      bgColor: "bg-accent/10",
-      prefix: "PKR ",
-      change: "Calculate now"
-    },
-  ];
+  const dramaticFadeIn = {
+    hidden: { y: 60, opacity: 0, scale: 0.9 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      scale: 1,
+      transition: { type: "spring", stiffness: 100, damping: 20 }
+    }
+  };
 
   return (
-    <div className="min-h-screen pb-10">
-      {/* Hero Section with Mesh */}
-      <MeshBackground variant="hero" animated className="px-6 py-10 md:px-10 md:py-14">
+    <div className="min-h-screen relative overflow-hidden pb-8">
+      {/* ════════════════════════════════════════════════════════════════
+          BACKGROUND LAYERS (Unified)
+          ════════════════════════════════════════════════════════════════ */}
+      <UnifiedBackground watermark="PAK FILER" />
+      {/* ════════════════════════════════════════════════════════════════
+          BACKGROUND LAYERS (Unified)
+          ════════════════════════════════════════════════════════════════ */}
+      <UnifiedBackground watermark="PAK FILER" />
+
+
+      {/* ════════════════════════════════════════════════════════════════
+          HERO SECTION
+          ════════════════════════════════════════════════════════════════ */}
+      <div className="relative z-10 px-6 pt-8 pb-6 md:px-10 md:pt-12 md:pb-8">
         <motion.div
-          className="max-w-5xl"
-          variants={staggerContainer}
+          className="w-full"
+          variants={dramaticStagger}
           initial="hidden"
           animate="visible"
         >
-          <motion.div variants={fadeInUp} className="flex items-center gap-2 mb-3">
-            <motion.div 
-              className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm"
-              whileHover={{ scale: 1.05 }}
+          {/* Status Badge */}
+          <motion.div variants={dramaticFadeIn} className="mb-6">
+            <motion.div
+              className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/95 backdrop-blur-xl border border-[#C5DACF]/50 shadow-lg shadow-[#0E552F]/8"
+              whileHover={{ scale: 1.03, boxShadow: "0 20px 40px -10px rgba(14,85,47,0.18)" }}
             >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0E552F] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-gradient-to-br from-[#0E552F] to-[#45745B]"></span>
               </span>
-              <span className="text-primary-foreground/90 text-sm font-medium">
-                Tax Year 2024 Open
-              </span>
+              <span className="text-[#0E552F] text-sm font-bold tracking-wide">TAX YEAR 2026 OPEN</span>
             </motion.div>
           </motion.div>
-          
-          <motion.h1 
-            className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-3"
-            variants={fadeInUp}
+
+          {/* Welcome */}
+          <motion.h1
+            className="text-4xl md:text-5xl lg:text-7xl font-extrabold mb-4 leading-tight tracking-tight"
+            variants={dramaticFadeIn}
           >
-            Welcome back, {user?.name?.split(' ')[0] || "there"}! 👋
+            <span className="text-[#1a1a1a]">Welcome back,</span>
+            <br />
+            <span className="bg-gradient-to-r from-[#0E552F] via-[#2d7a4a] to-[#45745B] bg-clip-text text-transparent">
+              {user?.name?.split(' ')[0] || "there"}!
+            </span>
+            <span className="text-[#1a1a1a]"> 👋</span>
           </motion.h1>
-          
-          <motion.p 
-            className="text-primary-foreground/80 text-lg max-w-2xl mb-8"
-            variants={fadeInUp}
+
+          <motion.p
+            className="text-[#45745B] text-xl max-w-lg mb-8 font-medium"
+            variants={dramaticFadeIn}
           >
-            Your trusted partner for hassle-free tax filing in Pakistan.
+            Pakistan's most trusted tax filing platform
           </motion.p>
 
-          {/* Features Pills */}
-          <motion.div 
-            className="flex flex-wrap gap-4 mb-8"
-            variants={fadeInUp}
-          >
+          {/* Feature Pills */}
+          <motion.div className="flex flex-wrap gap-3 mb-8" variants={dramaticFadeIn}>
             {features.map((feature, i) => (
               <motion.div
                 key={feature.label}
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 + i * 0.1 }}
-                whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.15)" }}
+                className="flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-white/90 backdrop-blur-xl border border-[#C5DACF]/40 shadow-lg shadow-[#0E552F]/5"
+                whileHover={{ y: -4, scale: 1.02, boxShadow: "0 20px 40px -10px rgba(14,85,47,0.2)" }}
               >
-                <feature.icon className="h-4 w-4 text-soft" />
-                <span className="text-sm text-primary-foreground font-medium">{feature.label}</span>
+                <div className="p-2 rounded-xl bg-gradient-to-br from-[#0E552F] to-[#45745B] shadow-md shadow-[#0E552F]/30">
+                  <feature.icon className="h-4 w-4 text-white" />
+                </div>
+                <span className="text-sm font-semibold text-[#0E552F]">{feature.label}</span>
               </motion.div>
             ))}
           </motion.div>
 
-          {/* Resume Filing CTA */}
+          {/* CTAs */}
           {hasInProgressFiling ? (
-            <motion.div variants={fadeInUp}>
-              <GlassCard variant="elevated" className="p-6 max-w-xl bg-white/10 backdrop-blur-xl border-white/20">
-                <div className="flex items-center gap-6">
-                  <ProgressRing 
-                    progress={progressPercentage} 
-                    size={90} 
-                    strokeWidth={7}
-                    showPercentage
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-foreground">Continue Your Filing</h3>
-                      <span className="px-2 py-0.5 text-xs rounded-full bg-amber-500/20 text-amber-600 font-medium">
-                        In Progress
-                      </span>
+            <motion.div variants={dramaticFadeIn}>
+              <Link to="/tax-filing">
+                <Magnetic>
+                  <motion.div
+                    className="inline-flex items-center gap-4 px-6 py-4 rounded-2xl bg-gradient-to-r from-[#0E552F] to-[#2d7a4a] text-white shadow-2xl shadow-[#0E552F]/40 cursor-pointer border border-white/20"
+                    whileHover={{ scale: 1.02, boxShadow: "0 25px 50px -15px rgba(14,85,47,0.5)" }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-white/20 blur-xl rounded-full" />
+                      <ProgressRing progress={progressPercentage} size={50} strokeWidth={4} showPercentage />
                     </div>
-                    <p className="text-sm text-muted-foreground mb-1">
-                      Step {taxFilingProgress.currentStep} of {taxFilingProgress.totalSteps} — Personal Tax Filing
-                    </p>
-                    <ProgressBar progress={progressPercentage} size="sm" className="mb-3" />
-                    <Link to="/tax-filing">
-                      <GradientButton size="sm" icon={<ArrowRight className="h-4 w-4" />} iconPosition="right">
-                        Resume Filing
-                      </GradientButton>
-                    </Link>
-                  </div>
-                </div>
-              </GlassCard>
+                    <div>
+                      <p className="font-bold text-lg text-white drop-shadow-sm">Continue Filing</p>
+                      <p className="text-white/80 text-sm font-medium">Step {taxFilingProgress.currentStep} of {taxFilingProgress.totalSteps}</p>
+                    </div>
+                    <div className="bg-white/20 p-2 rounded-full">
+                      <ArrowRight className="h-5 w-5" />
+                    </div>
+                  </motion.div>
+                </Magnetic>
+              </Link>
             </motion.div>
           ) : (
-            <motion.div variants={fadeInUp} className="flex flex-wrap gap-4">
+            <motion.div variants={dramaticFadeIn} className="flex flex-wrap gap-4">
               <Link to="/tax-filing">
-                <GradientButton 
-                  size="lg" 
-                  icon={<FileText className="h-5 w-5" />}
-                  className="shadow-xl shadow-primary/20"
-                >
-                  Start Tax Filing
-                </GradientButton>
+                <Magnetic>
+                  <motion.button
+                    className="group relative px-8 py-4 rounded-2xl bg-gradient-to-r from-[#0E552F] via-[#1a6b3d] to-[#45745B] text-white font-bold text-lg shadow-2xl shadow-[#0E552F]/30 flex items-center gap-3 overflow-hidden"
+                    whileHover={{ scale: 1.03, boxShadow: "0 30px 60px -15px rgba(14,85,47,0.45)" }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-150%] group-hover:translate-x-[150%] transition-transform duration-700" />
+                    <FileText className="h-5 w-5" />
+                    Start Tax Filing
+                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </motion.button>
+                </Magnetic>
               </Link>
               <Link to="/calculator">
-                <GradientButton 
-                  variant="secondary" 
-                  size="lg" 
-                  icon={<Calculator className="h-5 w-5" />}
-                >
-                  Calculate Tax First
-                </GradientButton>
+                <Magnetic>
+                  <motion.button
+                    className="px-8 py-4 rounded-2xl bg-white/95 backdrop-blur-xl text-[#0E552F] font-bold text-lg border-2 border-[#C5DACF] shadow-xl shadow-[#0E552F]/10 flex items-center gap-3"
+                    whileHover={{ scale: 1.02, borderColor: "#82A492", boxShadow: "0 20px 40px -10px rgba(14,85,47,0.2)" }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Calculator className="h-5 w-5" />
+                    Calculate First
+                  </motion.button>
+                </Magnetic>
               </Link>
             </motion.div>
           )}
         </motion.div>
-      </MeshBackground>
+      </div>
 
-      {/* Main Content */}
-      <div className="px-6 md:px-10 -mt-6">
-        {/* Stats Cards */}
-        <motion.section
+      {/* ════════════════════════════════════════════════════════════════
+          STATS ROW - WITH TILT & SPARKLINES
+          ════════════════════════════════════════════════════════════════ */}
+      <div className="px-6 md:px-10 mb-10">
+        <motion.div
+          className="w-full grid grid-cols-2 lg:grid-cols-4 gap-4"
+          variants={dramaticStagger}
           initial="hidden"
           animate="visible"
-          className="mb-10"
         >
-          <AnimatedGrid
-            items={stats}
-            keyExtractor={(stat) => stat.label}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-4"
-            staggerDelay={0.06}
-            renderItem={(stat) => (
-              <motion.div
-                variants={cardHover}
-                initial="rest"
-                whileHover="hover"
-                whileTap="tap"
-              >
-                <GlassCard className="p-5 h-full" interactive animate={false}>
-                  <div className="flex items-start justify-between mb-3">
-                    <div className={cn("p-2 rounded-lg", stat.bgColor)}>
-                      <stat.icon className={cn("h-5 w-5", stat.color)} />
+          {[
+            {
+              label: "Resume Filing",
+              value: hasInProgressFiling ? 1 : 0,
+              icon: FileText,
+              gradient: "from-[#82A492] to-[#45745B]", // Reverted to standard Green
+              sparkline: "M0,20 C10,20 15,10 25,10 C35,10 40,25 50,25 C60,25 65,5 75,5 C85,5 90,15 100,15",
+              // Removed action: true
+            },
+            { label: "Completed", value: 0, icon: CheckCircle2, gradient: "from-[#0E552F] to-[#45745B]", sparkline: "M0,25 C15,25 25,25 35,25 C45,25 55,25 65,25 C75,25 85,25 100,25" },
+            { label: "Tax Year", value: 2026, icon: TrendingUp, gradient: "from-[#45745B] to-[#82A492]", sparkline: "M0,30 L20,25 L40,28 L60,10 L80,15 L100,0" },
+            { label: "Savings", value: 0, icon: Sparkles, gradient: "from-[#0E552F] to-[#2d7a4a]", prefix: "PKR ", sparkline: "M0,25 Q25,25 50,15 T100,5" },
+          ].map((stat, i) => (
+            <motion.div
+              key={stat.label}
+              variants={dramaticFadeIn}
+              custom={i}
+            >
+              <TiltCard>
+                <div className="relative rounded-2xl p-5 border shadow-lg h-full overflow-hidden transition-all duration-300 bg-white/90 backdrop-blur-xl border-[#C5DACF]/40">
+                  {/* Hover glow */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#0E552F]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                  {/* Sparkline Visual */}
+                  <div className="absolute right-0 bottom-0 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
+                    <svg width="100" height="40" viewBox="0 0 100 30" fill="none">
+                      <motion.path
+                        d={stat.sparkline}
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        className="text-[#0E552F]"
+                        initial={{ pathLength: 0 }}
+                        animate={{ pathLength: 1 }}
+                        transition={{ duration: 2, ease: "easeInOut", delay: 1 + i * 0.2 }}
+                      />
+                    </svg>
+                  </div>
+
+                  <div className={cn("w-11 h-11 rounded-xl bg-gradient-to-br flex items-center justify-center mb-3 shadow-lg transition-transform group-hover:scale-110", stat.gradient)}>
+                    <stat.icon className="h-5 w-5 text-white" />
+                  </div>
+
+                  <div className="flex justify-between items-end">
+                    <div>
+                      <p className={cn(
+                        "text-xs font-semibold mb-1 uppercase tracking-wider",
+                        stat.action ? "text-[#D97706]" : "text-[#82A492]"
+                      )}>{stat.label}</p>
+                      <p className={cn(
+                        "text-2xl font-extrabold relative z-10",
+                        stat.action ? "text-[#B45309]" : "text-[#0E552F]"
+                      )}>
+                        {stat.prefix}<AnimatedCounter value={stat.value} />
+                      </p>
                     </div>
-                    {stat.change && (
-                      <span className="text-xs text-primary font-medium hover:underline cursor-pointer">
-                        {stat.change}
-                      </span>
+
+                    {/* Action Arrow */}
+                    {stat.action && (
+                      <div className="mb-1 p-1.5 rounded-full bg-[#FEF3C7] text-[#D97706] group-hover:translate-x-1 transition-transform">
+                        <ArrowRight className="w-4 h-4" />
+                      </div>
                     )}
                   </div>
-                  <p className="text-sm text-muted-foreground mb-1">{stat.label}</p>
-                  <p className="text-2xl font-bold text-foreground">
-                    {stat.prefix && <span className="text-lg">{stat.prefix}</span>}
-                    <AnimatedCounter value={stat.value} />
-                  </p>
-                </GlassCard>
-              </motion.div>
-            )}
-          />
-        </motion.section>
+                </div>
+              </TiltCard>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Quick Actions & Services */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Quick Actions */}
-            <motion.section
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-50px" }}
-            >
-              <motion.div className="flex items-center justify-between mb-5" variants={fadeInUp}>
-                <h2 className="text-xl font-semibold text-foreground">Quick Actions</h2>
-              </motion.div>
-              
-              <AnimatedGrid
-                items={quickActions}
-                keyExtractor={(action) => action.title}
-                className="grid grid-cols-1 md:grid-cols-3 gap-4"
-                staggerDelay={0.1}
-                renderItem={(action) => (
-                  <Link to={action.href} className="block h-full">
-                    <motion.div
-                      className="group h-full"
-                      variants={cardHover}
-                      initial="rest"
-                      whileHover="hover"
-                      whileTap="tap"
-                    >
-                      <GlassCard 
-                        variant="gradient" 
-                        interactive 
-                        animate={false}
-                        className="p-5 h-full relative overflow-hidden"
+      {/* ════════════════════════════════════════════════════════════════
+          BENTO GRID - WITH TILT & 3D GLARE
+          ════════════════════════════════════════════════════════════════ */}
+      <div className="px-6 md:px-10">
+        <motion.div
+          className="w-full"
+          variants={dramaticStagger}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+        >
+          {/* Section Header */}
+          <motion.div className="flex items-center gap-3 mb-6" variants={dramaticFadeIn}>
+            <div className="p-2.5 rounded-xl bg-gradient-to-br from-[#0E552F] to-[#45745B] shadow-lg shadow-[#0E552F]/25">
+              <Zap className="h-5 w-5 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-[#0E552F]">Our Services</h2>
+          </motion.div>
+
+          {/* Bento Grid */}
+          <div
+            className="grid gap-4 spotlight-wrapper"
+            style={{
+              gridTemplateColumns: "repeat(4, 1fr)",
+              gridTemplateRows: "repeat(3, minmax(160px, auto))",
+              gridTemplateAreas: `
+                "hero hero family family"
+                "hero hero calc track"
+                "iris ntn gst business"
+              `,
+            }}
+          >
+            {services.map((service, index) => {
+              const isHero = service.gridArea === "hero";
+
+              // Define distinct visual variants to break the "white wall"
+              let variantClass = "";
+              let textClass = "";
+              let iconBgClass = "";
+              let glareColor = "";
+
+              switch (service.gridArea) {
+                case "hero":
+                  variantClass = "bg-gradient-to-br from-[#0E552F] via-[#1a6b3d] to-[#45745B] text-white shadow-2xl shadow-[#0E552F]/35";
+                  textClass = "text-white/90";
+                  iconBgClass = "bg-white/20 backdrop-blur-sm group-hover:scale-110 group-hover:bg-white/25";
+                  glareColor = "rgba(255,255,255,0.2)";
+                  break;
+
+                case "calc":
+                  // "Midnight" Dark Variant (High Contrast)
+                  variantClass = "bg-[#1B2B23] backdrop-blur-xl border border-white/10 text-white shadow-xl shadow-black/10";
+                  textClass = "text-white/70";
+                  iconBgClass = "bg-[#45745B]/30 group-hover:scale-110 group-hover:bg-[#45745B]/50";
+                  glareColor = "rgba(130,164,146,0.3)";
+                  break;
+
+                case "family":
+                case "track":
+                  // "Mint Mist" Variant (Subtle Green Tint)
+                  variantClass = "bg-[#E8F5EF]/80 backdrop-blur-xl border border-[#C5DACF] shadow-lg hover:shadow-[#0E552F]/10";
+                  textClass = "text-[#45745B]";
+                  iconBgClass = "bg-white group-hover:scale-110 shadow-sm";
+                  glareColor = "rgba(14,85,47,0.1)";
+                  break;
+
+                default:
+                  // "Crystal" Variant (Translucent Glass)
+                  variantClass = "bg-white/60 backdrop-blur-2xl border border-white/60 shadow-lg hover:shadow-[#0E552F]/5";
+                  textClass = "text-[#6B8E7B]";
+                  iconBgClass = "bg-gradient-to-br from-[#0E552F] to-[#45745B] text-white shadow-md shadow-[#0E552F]/20 group-hover:scale-110";
+                  glareColor = "rgba(255,255,255,0.4)";
+                  break;
+              }
+
+              // Overrides for coming soon
+              if (service.comingSoon) {
+                variantClass = "bg-gray-50/50 border border-gray-100 opacity-70";
+                textClass = "text-gray-400";
+                iconBgClass = "bg-gray-200 text-gray-400";
+              }
+
+              return (
+                <motion.div
+                  key={service.title}
+                  style={{ gridArea: service.gridArea }}
+                  variants={dramaticFadeIn}
+                  custom={index}
+                >
+                  <Link
+                    to={service.comingSoon ? "#" : service.href}
+                    className={cn("block h-full", service.comingSoon && "cursor-not-allowed")}
+                    onClick={(e) => service.comingSoon && e.preventDefault()}
+                  >
+                    <TiltCard className="h-full" glareColor={glareColor}>
+                      <div
+                        className={cn(
+                          "h-full rounded-3xl p-6 relative overflow-hidden group transition-all duration-500 flex flex-col",
+                          variantClass
+                        )}
                       >
-                        {action.popular && (
-                          <div className="absolute top-3 right-3">
-                            <span className="px-2 py-0.5 text-xs rounded-full bg-primary text-primary-foreground font-medium">
-                              Popular
+                        {/* Hero specific decorations */}
+                        {isHero && (
+                          <>
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-150%] group-hover:translate-x-[150%] transition-transform duration-1000" />
+                            <motion.div
+                              className="absolute top-8 right-8 w-32 h-32 rounded-full bg-white/10 blur-2xl"
+                              animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
+                              transition={{ duration: 4, repeat: Infinity }}
+                            />
+                            <div
+                              className="absolute inset-0 opacity-[0.04]"
+                              style={{
+                                backgroundImage: `linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)`,
+                                backgroundSize: "40px 40px",
+                              }}
+                            />
+                          </>
+                        )}
+
+                        {/* Dark Card specific decorations */}
+                        {service.gridArea === "calc" && (
+                          <div className="absolute right-0 bottom-0 opacity-10">
+                            <Calculator className="w-32 h-32 -mb-8 -mr-8" />
+                          </div>
+                        )}
+
+                        {/* Popular Badge */}
+                        {service.popular && (
+                          <motion.div
+                            className="absolute top-5 right-5"
+                            animate={{ y: [0, -3, 0] }}
+                            transition={{ duration: 2, repeat: Infinity }}
+                          >
+                            <span className="px-3 py-1.5 text-xs rounded-full bg-white/25 backdrop-blur-sm text-white font-bold flex items-center gap-1.5 shadow-lg border border-white/20">
+                              <Star className="h-3 w-3 fill-current" /> POPULAR
+                            </span>
+                          </motion.div>
+                        )}
+
+                        {/* Coming Soon Badge */}
+                        {service.comingSoon && (
+                          <div className="absolute top-5 right-5">
+                            <span className="px-3 py-1.5 text-xs rounded-full bg-[#C5DACF]/60 text-[#45745B] font-semibold">
+                              Coming Soon
                             </span>
                           </div>
                         )}
+
+                        {/* Icon */}
                         <div className={cn(
-                          "w-11 h-11 rounded-xl bg-gradient-to-br flex items-center justify-center mb-4",
-                          "group-hover:scale-110 transition-transform duration-300",
-                          action.gradient
+                          "w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-all duration-300 relative z-10",
+                          iconBgClass
                         )}>
-                          <action.icon className="h-5 w-5 text-primary-foreground" />
+                          <service.icon className={cn("h-6 w-6", service.gridArea === "family" || service.gridArea === "track" ? "text-[#0E552F]" : "text-white")} />
                         </div>
-                        <h3 className="font-semibold text-foreground mb-1.5">{action.title}</h3>
-                        <p className="text-sm text-muted-foreground line-clamp-2">{action.description}</p>
-                        <div className="mt-3 flex items-center text-primary text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                          Get Started <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                        </div>
-                      </GlassCard>
-                    </motion.div>
-                  </Link>
-                )}
-              />
-            </motion.section>
 
-            {/* Services Grid */}
-            <motion.section
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-50px" }}
-            >
-              <motion.div className="flex items-center justify-between mb-5" variants={fadeInUp}>
-                <h2 className="text-xl font-semibold text-foreground">More Services</h2>
-                <Link to="/pricing" className="text-sm text-primary font-medium hover:underline flex items-center gap-1">
-                  View Pricing <ChevronRight className="h-4 w-4" />
-                </Link>
-              </motion.div>
-              
-              <AnimatedGrid
-                items={services}
-                keyExtractor={(service) => service.title}
-                className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-                staggerDelay={0.08}
-                renderItem={(service) => (
-                  <Link 
-                    to={service.disabled ? "#" : service.href} 
-                    className={cn("block", service.disabled && "cursor-not-allowed")}
-                    onClick={(e) => service.disabled && e.preventDefault()}
-                  >
-                    <motion.div
-                      className="group"
-                      variants={service.disabled ? {} : cardHover}
-                      initial="rest"
-                      whileHover={service.disabled ? undefined : "hover"}
-                    >
-                      <GlassCard 
-                        className={cn(
-                          "p-4 flex items-center gap-4",
-                          service.disabled && "opacity-60"
-                        )}
-                        interactive={!service.disabled}
-                        animate={false}
-                      >
-                        <div className="w-10 h-10 rounded-lg bg-muted/50 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/10 transition-colors">
-                          <service.icon className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                        {/* Content */}
+                        <div className="relative z-10">
+                          <h3 className={cn(
+                            "font-bold mb-2",
+                            isHero || service.gridArea === "calc" ? "text-xl text-white" : "text-lg text-[#0E552F]",
+                            service.comingSoon && "text-[#82A492]"
+                          )}>
+                            {service.title}
+                          </h3>
+                          <p className={cn(
+                            "text-sm leading-relaxed",
+                            textClass
+                          )}>
+                            {service.description}
+                          </p>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-medium text-foreground text-sm">{service.title}</h3>
-                            {service.badge && (
-                              <span className="px-2 py-0.5 text-xs rounded-full bg-accent/30 text-secondary font-medium">
-                                {service.badge}
-                              </span>
-                            )}
+
+                        {/* CTA */}
+                        {!service.comingSoon && (
+                          <div className={cn(
+                            "mt-auto flex items-center gap-1 text-sm font-bold opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 z-10",
+                            isHero || service.gridArea === "calc" ? "text-white" : "text-[#0E552F]"
+                          )}>
+                            Get Started <ArrowUpRight className="h-4 w-4" />
                           </div>
-                          <p className="text-xs text-muted-foreground truncate">{service.description}</p>
-                        </div>
-                        <ChevronRight className={cn(
-                          "h-4 w-4 text-muted-foreground flex-shrink-0 transition-transform",
-                          !service.disabled && "group-hover:translate-x-1 group-hover:text-primary"
-                        )} />
-                      </GlassCard>
-                    </motion.div>
+                        )}
+                      </div>
+                    </TiltCard>
                   </Link>
-                )}
-              />
-            </motion.section>
+                </motion.div>
+              );
+            })}
+
           </div>
 
-          {/* Right Column - Activity & Tips */}
-          <div className="space-y-6">
-            {/* Recent Activity */}
-            <motion.section
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-50px" }}
-            >
-              <motion.div className="flex items-center justify-between mb-5" variants={fadeInUp}>
-                <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                  <Bell className="h-4 w-4 text-muted-foreground" />
-                  Activity
-                </h2>
-              </motion.div>
-
-              <GlassCard className="p-4">
-                <AnimatedList
-                  items={recentActivities}
-                  keyExtractor={(activity) => activity.id}
-                  staggerDelay={0.1}
-                  showGradients={recentActivities.length > 3}
-                  className="max-h-64"
-                  itemClassName="mb-4 last:mb-0"
-                  renderItem={(activity) => (
-                    <div className="flex gap-3">
-                      <div className={cn(
-                        "w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0",
-                        getActivityIcon(activity.type)
-                      )}>
-                        <activity.icon className="h-4 w-4" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-foreground">{activity.title}</p>
-                        <p className="text-xs text-muted-foreground line-clamp-2">{activity.description}</p>
-                        <p className="text-xs text-muted-foreground/60 mt-1">{activity.time}</p>
-                      </div>
-                    </div>
-                  )}
-                />
-
-                {recentActivities.length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p className="text-sm">No recent activity</p>
-                  </div>
-                )}
-              </GlassCard>
-            </motion.section>
-
-            {/* Tips Card */}
-            <motion.section
-              variants={fadeInUp}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-            >
-              <GlassCard variant="bordered" className="p-5 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-primary/10 to-transparent rounded-bl-full" />
-                <div className="relative">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="p-1.5 rounded-lg bg-primary/10">
-                      <Sparkles className="h-4 w-4 text-primary" />
-                    </div>
-                    <span className="text-sm font-semibold text-foreground">Pro Tip</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Use our Salary Calculator to estimate your tax liability before filing. This helps you prepare documents in advance!
-                  </p>
-                  <Link to="/calculator">
-                    <GradientButton variant="ghost" size="sm" className="w-full justify-center">
-                      Try Calculator <ArrowRight className="h-4 w-4 ml-1" />
-                    </GradientButton>
-                  </Link>
-                </div>
-              </GlassCard>
-            </motion.section>
-
-            {/* Help Card */}
-            <motion.section
-              variants={fadeInUp}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-            >
-              <GlassCard className="p-5">
-                <h3 className="font-semibold text-foreground mb-2">Need Help?</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Our support team is ready to assist you with any questions.
-                </p>
-                <Link to="/help">
-                  <GradientButton variant="outline" size="sm" className="w-full justify-center">
-                    View Help Center
-                  </GradientButton>
-                </Link>
-              </GlassCard>
-            </motion.section>
-          </div>
-        </div>
+          {/* Mobile Grid (stacked) */}
+          <style>{`
+            @media (max-width: 768px) {
+              .grid[style] {
+                grid-template-columns: 1fr !important;
+                grid-template-rows: auto !important;
+                grid-template-areas: 
+                  "hero"
+                  "family"
+                  "calc"
+                  "track"
+                  "iris"
+                  "ntn"
+                  "gst"
+                  "business" !important;
+              }
+            }
+            @media (min-width: 768px) and (max-width: 1024px) {
+              .grid[style] {
+                grid-template-columns: 1fr 1fr !important;
+                grid-template-rows: auto !important;
+                grid-template-areas: 
+                  "hero hero"
+                  "family family"
+                  "calc track"
+                  "iris ntn"
+                  "gst business" !important;
+              }
+            }
+          `}</style>
+        </motion.div>
       </div>
-    </div>
+    </div >
   );
 }

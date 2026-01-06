@@ -1,0 +1,239 @@
+[
+    {
+        "service_id": "personal_filing",
+        "service_name": "Personal Filing",
+        "description": "Comprehensive tax solution for individuals, ensuring accuracy and compliance.",
+        "sub_services": [
+            {
+                "sub_service_id": "single_income",
+                "name": "Single Income Source",
+                "description": "For individuals with a single income source (e.g., salary or rental).",
+                "base_fee": 999,
+                "addOns": [
+                    {
+                        "addon_id": "ca_review",
+                        "name": "CA Review",
+                        "description": "Professional review by a Chartered Accountant for enhanced accuracy.",
+                        "fee": 1000
+                    }
+                ]
+            },
+            {
+                "sub_service_id": "multiple_income",
+                "name": "Multiple Income Sources",
+                "description": "For individuals with multiple income sources (e.g., salary + business + rental).",
+                "base_fee": 1500,
+                "addOns": [
+                    {
+                        "addon_id": "ca_review",
+                        "name": "CA Review",
+                        "description": "Professional review by a Chartered Accountant for enhanced accuracy.",
+                        "fee": 1000
+                    }
+                ]
+            },
+            {
+                "sub_service_id": "filer_plus",
+                "name": "Filer Plus (Upload Documents)",
+                "description": "Upload your tax documents, and we handle the filing for you.",
+                "base_fee": 3500,
+                "addOns": [
+                    {
+                        "addon_id": "ca_review",
+                        "name": "CA Review",
+                        "description": "Professional review by a Chartered Accountant for enhanced accuracy.",
+                        "fee": 1000
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "service_id": "business_filing",
+        "service_name": "Business Filing",
+        "description": "Tailored tax filing solutions for businesses of all sizes and structures.",
+        "sub_services": [
+            {
+                "sub_service_id": "sole_proprietor",
+                "name": "Individual / Sole Proprietor - Online Filing",
+                "description": "Online filing service for sole proprietors.",
+                "base_fee": 3000,
+                "addOns": [
+                    {
+                        "addon_id": "ca_review",
+                        "name": "CA Review",
+                        "description": "Professional review by a Chartered Accountant.",
+                        "fee": 2000
+                    }
+                ]
+            },
+            {
+                "sub_service_id": "sole_proprietor_upload",
+                "name": "Individual / Sole Proprietor - Upload Documents",
+                "description": "Upload documents service for sole proprietors.",
+                "base_fee": 5000,
+                "addOns": [
+                    {
+                        "addon_id": "ca_review",
+                        "name": "CA Review",
+                        "description": "Professional review by a Chartered Accountant.",
+                        "fee": 2000
+                    }
+                ]
+            },
+            {
+                "sub_service_id": "partnership_aop",
+                "name": "Partnership / AOP - Online Filing",
+                "description": "Online filing for partnerships and Associations of Persons (AOP).",
+                "base_fee": 4500,
+                "addOns": [
+                    {
+                        "addon_id": "ca_review",
+                        "name": "CA Review",
+                        "description": "Professional review by a Chartered Accountant.",
+                        "fee": 3000
+                    }
+                ]
+            },
+            {
+                "sub_service_id": "partnership_aop_upload",
+                "name": "Partnership / AOP - Upload Documents",
+                "description": "Upload documents service for partnerships/AOPs.",
+                "base_fee": 7500,
+                "addOns": [
+                    {
+                        "addon_id": "ca_review",
+                        "name": "CA Review",
+                        "description": "Professional review by a Chartered Accountant.",
+                        "fee": 3000
+                    }
+                ]
+            },
+            {
+                "sub_service_id": "private_limited",
+                "name": "Private Limited Company - Online Filing",
+                "description": "Online filing for private limited companies.",
+                "base_fee": 6000,
+                "addOns": [
+                    {
+                        "addon_id": "ca_review",
+                        "name": "CA Review",
+                        "description": "Professional review by a Chartered Accountant.",
+                        "fee": 4000
+                    }
+                ]
+            },
+            {
+                "sub_service_id": "private_limited_upload",
+                "name": "Private Limited Company - Upload Documents",
+                "description": "Upload documents service for private limited companies.",
+                "base_fee": 10000,
+                "addOns": [
+                    {
+                        "addon_id": "ca_review",
+                        "name": "CA Review",
+                        "description": "Professional review by a Chartered Accountant.",
+                        "fee": 4000
+                    }
+                ]
+            },
+            {
+                "sub_service_id": "non_profit",
+                "name": "Non-Profit Organization - Online Filing",
+                "description": "Online filing for non-profit organizations.",
+                "base_fee": 9000,
+                "addOns": [
+                    {
+                        "addon_id": "ca_review",
+                        "name": "CA Review",
+                        "description": "Professional review by a Chartered Accountant.",
+                        "fee": 4000
+                    }
+                ]
+            },
+            {
+                "sub_service_id": "non_profit_upload",
+                "name": "Non-Profit Organization - Upload Documents",
+                "description": "Upload documents service for non-profit organizations.",
+                "base_fee": 13000,
+                "addOns": [
+                    {
+                        "addon_id": "ca_review",
+                        "name": "CA Review",
+                        "description": "Professional review by a Chartered Accountant.",
+                        "fee": 4000
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "service_id": "ntn_registration",
+        "service_name": "NTN Registration",
+        "description": "Fast and hassle-free National Tax Number (NTN) registration.",
+        "sub_services": [
+            {
+                "sub_service_id": "salaried_individual",
+                "name": "Salaried Individual",
+                "description": "NTN registration for salaried employees.",
+                "base_fee": 500
+            },
+            {
+                "sub_service_id": "sole_proprietor",
+                "name": "Sole Proprietor",
+                "description": "NTN registration for sole proprietors.",
+                "base_fee": 1500
+            },
+            {
+                "sub_service_id": "partnership_aop",
+                "name": "Partnership / AOP",
+                "description": "NTN registration for partnerships and AOPs.",
+                "base_fee": 3500
+            },
+            {
+                "sub_service_id": "private_limited",
+                "name": "Private Limited Company",
+                "description": "NTN registration for private limited companies.",
+                "base_fee": 7000
+            },
+            {
+                "sub_service_id": "non_profit",
+                "name": "Non-Profit Organization",
+                "description": "NTN registration for non-profit organizations.",
+                "base_fee": 9000
+            }
+        ]
+    },
+    {
+        "service_id": "gst_registration",
+        "service_name": "GST Registration",
+        "description": "Complete General Sales Tax (GST/STRN) registration services.",
+        "sub_services": [
+            {
+                "sub_service_id": "gst_reg_standard",
+                "name": "Standard GST Registration",
+                "description": "Full GST registration process.",
+                "base_fee": 9000
+            }
+        ]
+    },
+    {
+        "service_id": "iris_profile_update",
+        "service_name": "IRIS Profile Update",
+        "description": "Quick updates to your FBR IRIS profile information.",
+        "sub_services": [
+            {
+                "sub_service_id": "salary_income_update",
+                "name": "Salary Income Update",
+                "description": "Update salary income details.",
+                "base_fee": 100
+            },
+            {
+                "sub_service_id": "business_income_update",
+                "name": "Business Income Update",
+                "description": "Update business income details.",
+                "base_fee": 800
+            }
+        ]
+    }
+]

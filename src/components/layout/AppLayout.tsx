@@ -1,25 +1,20 @@
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { motion } from "framer-motion";
-import { AppSidebar } from "./AppSidebar";
-import { pageSlide } from "@/lib/animations";
+import { FloatingDock } from "@/components/layout/FloatingDock"; // Updated import
 
-export function AppLayout() {
+const AppLayout = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <AppSidebar />
-      
-      {/* Main Content */}
-      <motion.main
-        className="ml-[72px] md:ml-64 min-h-screen"
-        variants={pageSlide}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-      >
+    <div className="min-h-screen w-full relative">
+
+      {/* Main Content Area - Natural Flow */}
+      <main className="relative w-full pb-32">
         <Outlet />
-      </motion.main>
+      </main>
+
+      {/* New Mac-style Floating Dock */}
+      <FloatingDock />
     </div>
   );
-}
+};
 
 export default AppLayout;
