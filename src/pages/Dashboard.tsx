@@ -28,7 +28,6 @@ import { TiltCard } from "@/components/ui/TiltCard"; // New Tilt Component
 import { useAuth } from "@/hooks/useAuth";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
-import { fadeInUp, staggerContainer } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { UnifiedBackground } from "@/components/layout/UnifiedBackground";
 
