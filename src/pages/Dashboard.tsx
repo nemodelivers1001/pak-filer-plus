@@ -332,17 +332,12 @@ export default function Dashboard() {
 
                   <div className="flex justify-between items-end">
                     <div>
-                      <p className={cn(
-                        "text-xs font-semibold mb-1 uppercase tracking-wider",
-                        stat.action ? "text-[#D97706]" : "text-[#82A492]"
-                      )}>{stat.label}</p>
-                      <p className={cn(
-                        "text-2xl font-extrabold relative z-10",
-                        stat.action ? "text-[#B45309]" : "text-[#0E552F]"
-                      )}>
+                      <p className="text-xs font-semibold mb-1 uppercase tracking-wider text-[#82A492]">{stat.label}</p>
+                      <p className="text-2xl font-extrabold relative z-10 text-[#0E552F]">
                         {stat.prefix}<AnimatedCounter value={stat.value} />
                       </p>
                     </div>
+                  </div>
 
                     {/* Action Arrow */}
                     {stat.action && (
