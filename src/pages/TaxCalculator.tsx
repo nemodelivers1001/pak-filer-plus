@@ -103,7 +103,7 @@ export default function TaxCalculator() {
         <div className="fixed inset-0 w-screen h-screen bg-gradient-to-br from-[#0E552F] via-[#09331c] to-[#051a0f] text-white overflow-hidden font-sans selection:bg-[#FCD34D] selection:text-[#0E552F] z-0">
 
             {/* CSS to remove number spinners */}
-            <style jsx>{`
+            <style>{`
                 input::-webkit-outer-spin-button,
                 input::-webkit-inner-spin-button {
                     -webkit-appearance: none;

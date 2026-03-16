@@ -28,7 +28,6 @@ import { TiltCard } from "@/components/ui/TiltCard"; // New Tilt Component
 import { useAuth } from "@/hooks/useAuth";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
-import { fadeInUp, staggerContainer } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { UnifiedBackground } from "@/components/layout/UnifiedBackground";
 
@@ -148,16 +147,12 @@ export default function Dashboard() {
       y: 0,
       opacity: 1,
       scale: 1,
-      transition: { type: "spring", stiffness: 100, damping: 20 }
+      transition: { type: "spring" as const, stiffness: 100, damping: 20 }
     }
   };
 
   return (
     <div className="min-h-screen relative overflow-hidden pb-8">
-      {/* ════════════════════════════════════════════════════════════════
-          BACKGROUND LAYERS (Unified)
-          ════════════════════════════════════════════════════════════════ */}
-      <UnifiedBackground watermark="PAK FILER" />
       {/* ════════════════════════════════════════════════════════════════
           BACKGROUND LAYERS (Unified)
           ════════════════════════════════════════════════════════════════ */}
@@ -337,25 +332,13 @@ export default function Dashboard() {
 
                   <div className="flex justify-between items-end">
                     <div>
-                      <p className={cn(
-                        "text-xs font-semibold mb-1 uppercase tracking-wider",
-                        stat.action ? "text-[#D97706]" : "text-[#82A492]"
-                      )}>{stat.label}</p>
-                      <p className={cn(
-                        "text-2xl font-extrabold relative z-10",
-                        stat.action ? "text-[#B45309]" : "text-[#0E552F]"
-                      )}>
+                      <p className="text-xs font-semibold mb-1 uppercase tracking-wider text-[#82A492]">{stat.label}</p>
+                      <p className="text-2xl font-extrabold relative z-10 text-[#0E552F]">
                         {stat.prefix}<AnimatedCounter value={stat.value} />
                       </p>
                     </div>
-
-                    {/* Action Arrow */}
-                    {stat.action && (
-                      <div className="mb-1 p-1.5 rounded-full bg-[#FEF3C7] text-[#D97706] group-hover:translate-x-1 transition-transform">
-                        <ArrowRight className="w-4 h-4" />
-                      </div>
-                    )}
                   </div>
+
                 </div>
               </TiltCard>
             </motion.div>
