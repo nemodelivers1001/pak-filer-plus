@@ -339,13 +339,6 @@ export default function Dashboard() {
                     </div>
                   </div>
 
-                    {/* Action Arrow */}
-                    {stat.action && (
-                      <div className="mb-1 p-1.5 rounded-full bg-[#FEF3C7] text-[#D97706] group-hover:translate-x-1 transition-transform">
-                        <ArrowRight className="w-4 h-4" />
-                      </div>
-                    )}
-                  </div>
                 </div>
               </TiltCard>
             </motion.div>
