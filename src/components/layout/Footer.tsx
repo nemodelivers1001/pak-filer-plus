@@ -1,108 +1,118 @@
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Facebook, Twitter, Linkedin, Instagram, ArrowUp } from "lucide-react";
+import { Facebook, Twitter, Linkedin, Instagram, Mail, Phone, MapPin, Clock } from "lucide-react";
 import pfLogo from "@/assets/pf-logo.png";
 
+const services = [
+  { label: "Personal Tax Filing", href: "/services/personal-tax-filing" },
+  { label: "Family Tax Filing", href: "/services/family-tax-filing" },
+  { label: "Business Tax Return", href: "/services/business-tax-return" },
+  { label: "NTN Registration", href: "/services/ntn-registration" },
+  { label: "IRIS Profile Update", href: "/services/iris-profile-update" },
+  { label: "GST Registration", href: "/services/gst-registration" },
+  { label: "Business Incorporation", href: "/services/business-incorporation" },
+  { label: "Salary Tax Calculator", href: "/services/salary-tax-calculator" },
+];
+
+const company = [
+  { label: "About Us", href: "/about" },
+  { label: "Pricing", href: "/pricing" },
+  { label: "FAQ", href: "/faq" },
+  { label: "Contact Us", href: "/contact" },
+  { label: "Privacy Policy", href: "/privacy-policy" },
+  { label: "Terms & Conditions", href: "/terms" },
+];
+
 export default function Footer() {
-    const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    };
-
-    return (
-        <footer className="relative bg-[#052e16] text-white overflow-hidden pt-32 pb-12">
-            {/* Monumental Background Text */}
-            <div className="absolute top-10 left-0 w-full overflow-hidden pointer-events-none opacity-[0.03]">
-                <h1 className="text-[15vw] font-bold leading-none whitespace-nowrap text-white">
-                    PAK FILER • PAK FILER • PAK
-                </h1>
+  return (
+    <footer className="bg-[#0F1F14] text-white">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8 mb-12">
+          {/* Brand */}
+          <div className="space-y-5">
+            <Link to="/" className="flex items-center gap-3">
+              <img src={pfLogo} alt="Pak Filer" className="w-12 h-12 rounded-xl bg-white p-1" />
+              <span className="text-xl font-display font-bold">Pak Filer</span>
+            </Link>
+            <p className="text-sm text-white/70 leading-relaxed">
+              Pakistan's Most Trusted Tax Filing Platform. We simplify Pakistan's tax system so you can focus on what matters most. CA-certified, secure, and 100% online.
+            </p>
+            <div className="flex gap-3">
+              {[
+                { Icon: Facebook, href: "#" },
+                { Icon: Instagram, href: "#" },
+                { Icon: Linkedin, href: "#" },
+                { Icon: Twitter, href: "#" },
+              ].map(({ Icon, href }, i) => (
+                <a key={i} href={href} target="_blank" rel="noopener noreferrer"
+                  className="w-9 h-9 rounded-full border border-white/20 flex items-center justify-center hover:bg-[#1A8549] hover:border-[#1A8549] transition-all">
+                  <Icon className="w-4 h-4" />
+                </a>
+              ))}
             </div>
+          </div>
 
-            {/* Gradient Mesh overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#011c10] via-transparent to-transparent pointer-events-none" />
+          {/* Services */}
+          <div>
+            <h4 className="font-display font-bold text-base mb-5">Services</h4>
+            <ul className="space-y-3">
+              {services.map(s => (
+                <li key={s.href}>
+                  <Link to={s.href} className="text-sm text-white/60 hover:text-white transition-colors">
+                    {s.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-            <div className="container mx-auto px-4 relative z-10">
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-20">
+          {/* Company */}
+          <div>
+            <h4 className="font-display font-bold text-base mb-5">Company</h4>
+            <ul className="space-y-3">
+              {company.map(c => (
+                <li key={c.href}>
+                  <Link to={c.href} className="text-sm text-white/60 hover:text-white transition-colors">
+                    {c.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-                    {/* Brand Column */}
-                    <div className="md:col-span-5 space-y-8">
-                        <Link to="/" className="flex items-center gap-3">
-                            <img src={pfLogo} alt="PAK Filer" className="w-14 h-14 rounded-xl bg-white p-1 shadow-lg" />
-                            <span className="text-2xl font-bold tracking-tight">PAK Filer</span>
-                        </Link>
-                        <p className="text-emerald-100/60 text-lg max-w-sm leading-relaxed">
-                            Empowering Pakistan's financial future through automated, secure, and intelligent tax compliance systems.
-                        </p>
-                        <div className="flex gap-4">
-                            {[Facebook, Twitter, Linkedin, Instagram].map((Icon, i) => (
-                                <a
-                                    key={i}
-                                    href="#"
-                                    className="w-10 h-10 rounded-full border border-emerald-500/20 flex items-center justify-center hover:bg-emerald-500 hover:text-[#052e16] hover:border-emerald-500 transition-all duration-300 group"
-                                >
-                                    <Icon className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                                </a>
-                            ))}
-                        </div>
-                    </div>
+          {/* Contact */}
+          <div>
+            <h4 className="font-display font-bold text-base mb-5">Contact</h4>
+            <ul className="space-y-4">
+              <li className="flex items-start gap-3 text-sm text-white/60">
+                <Mail className="w-4 h-4 mt-0.5 text-[#1A8549]" />
+                <span>support@pakfiler.com</span>
+              </li>
+              <li className="flex items-start gap-3 text-sm text-white/60">
+                <Phone className="w-4 h-4 mt-0.5 text-[#1A8549]" />
+                <span>WhatsApp Available</span>
+              </li>
+              <li className="flex items-start gap-3 text-sm text-white/60">
+                <MapPin className="w-4 h-4 mt-0.5 text-[#1A8549]" />
+                <span>Pakistan</span>
+              </li>
+              <li className="flex items-start gap-3 text-sm text-white/60">
+                <Clock className="w-4 h-4 mt-0.5 text-[#1A8549]" />
+                <span>Mon–Sat, 9 AM–6 PM PKT</span>
+              </li>
+            </ul>
+          </div>
+        </div>
 
-                    {/* Links Grid */}
-                    <div className="md:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-8">
-                        <div>
-                            <h4 className="font-bold text-lg mb-6 text-white">Services</h4>
-                            <ul className="space-y-4">
-                                {["Personal Tax", "Business Tax", "NTN Registration", "GST Compliance", "IRIS Updates"].map((item) => (
-                                    <li key={item}>
-                                        <Link to="#" className="text-emerald-100/60 hover:text-white hover:translate-x-1 transition-all inline-block">
-                                            {item}
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="font-bold text-lg mb-6 text-white">Company</h4>
-                            <ul className="space-y-4">
-                                {["About Us", "Our Team", "Careers", "Press & Media", "Contact"].map((item) => (
-                                    <li key={item}>
-                                        <Link to="#" className="text-emerald-100/60 hover:text-white hover:translate-x-1 transition-all inline-block">
-                                            {item}
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="font-bold text-lg mb-6 text-white">Support</h4>
-                            <ul className="space-y-4">
-                                {["Help Center", "Documentation", "API Status", "Privacy Policy", "Terms of Service"].map((item) => (
-                                    <li key={item}>
-                                        <Link to="#" className="text-emerald-100/60 hover:text-white hover:translate-x-1 transition-all inline-block">
-                                            {item}
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Footer Bottom */}
-                <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-6">
-                    <p className="text-white/40 text-sm">
-                        © {new Date().getFullYear()} PAK Filer. Built for the future of Pakistan.
-                    </p>
-
-                    <button
-                        onClick={scrollToTop}
-                        className="group flex items-center gap-2 text-sm font-medium text-emerald-400 hover:text-white transition-colors"
-                    >
-                        Back to Top
-                        <div className="w-8 h-8 rounded-full border border-emerald-500/30 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-[#052e16] transition-all">
-                            <ArrowUp className="w-4 h-4" />
-                        </div>
-                    </button>
-                </div>
-            </div>
-        </footer>
-    );
+        {/* Bottom Bar */}
+        <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-white/40">
+          <p>© {new Date().getFullYear()} Pak Filer. All rights reserved.</p>
+          <div className="flex flex-wrap items-center gap-4">
+            <span>🔒 Registered with FBR</span>
+            <span>✅ CA Certified Platform</span>
+            <span>🇵🇰 Built in Pakistan</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
 }
