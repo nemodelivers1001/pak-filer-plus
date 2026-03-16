@@ -1,226 +1,202 @@
-import { useState, useMemo, useRef, useEffect } from "react";
-import { motion, AnimatePresence, useScroll, useTransform, useSpring } from "framer-motion";
-import { Search, MessageCircle, ChevronDown, Sparkles, HelpCircle, FileText, Wallet, UserCircle } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Search } from "lucide-react";
 import { Link } from "react-router-dom";
+import SEOHead from "@/components/layout/SEOHead";
+import FAQSection from "@/components/landing/FAQSection";
 import FinalCTA from "@/components/layout/FinalCTA";
-import { cn } from "@/lib/utils";
 
-// --- DATA ---
-const CATEGORIES = [
-    { id: "all", label: "All Topics" },
-    { id: "general", label: "General", icon: HelpCircle },
-    { id: "tax-filing", label: "Tax Filing", icon: FileText },
-    { id: "payments", label: "Payments", icon: Wallet },
-    { id: "account", label: "Account", icon: UserCircle },
+const generalTaxFaqs = [
+  {
+    question: "Who is required to file an income tax return in Pakistan?",
+    answer: "Any individual whose annual income exceeds Rs 600,000 is required to file an income tax return with FBR. Additionally, individuals who own property, a vehicle, or have a foreign bank account must file regardless of income. All companies, AOPs, and partnerships must also file annual returns.",
+  },
+  {
+    question: "What is the difference between a tax filer and non-filer in Pakistan?",
+    answer: "A tax filer is someone who has filed their income tax return for the most recent tax year and appears on FBR's Active Taxpayers List (ATL). Non-filers face double or higher withholding tax rates on bank transactions, property purchases, vehicle registrations, and dividends. Becoming a filer can save you thousands of rupees annually.",
+  },
+  {
+    question: "What is Pakistan's tax year?",
+    answer: "Pakistan's standard tax year runs from July 1 to June 30. It is referred to as a 'Normal Tax Year'. The filing deadline for individuals is typically September 30. Companies may have different accounting years, subject to FBR approval.",
+  },
+  {
+    question: "Can I file a tax return for previous years?",
+    answer: "Yes. FBR allows late filing of previous years' tax returns, subject to late filing penalties. Filing for previous years helps you become an active filer and can clear any compliance notices you may have received. Pak Filer can assist with filing returns for previous tax years.",
+  },
 ];
 
-const FAQS = [
-    { category: "general", question: "What is PAK Filer?", answer: "PAK Filer is Pakistan's leading online tax filing platform (est. 2004). We synthesize complex tax laws into a simple digital workflow, allowing individuals and businesses to file returns in minutes." },
-    { category: "general", question: "Is PAK Filer compliant?", answer: "100%. We are a direct bridge to the FBR IRIS system. Every return filed through us is legally binding and recognized by the Federal Board of Revenue." },
-    { category: "tax-filing", question: "How long does it take?", answer: "Our 'Filing Wizard' typically takes a salaried individual 10-15 minutes. Complex business returns may take longer but are significantly faster than manual processing." },
-    { category: "tax-filing", question: "What is 'Upload Documents'?", answer: "This is our premium white-glove service. You simply drag-and-drop your salary slips and bank statements, and our FCA-certified experts handle the entire filing process for you." },
-    { category: "tax-filing", question: "Can I file for previous years?", answer: "Yes. Our system supports retroactive filing for up to 5 preceding tax years. This is crucial for clearing ‘Non-Filer’ status." },
-    { category: "payments", question: "Is my payment secure?", answer: "We use bank-grade 256-bit encryption. We accept all major Pakistani payment methods including JazzCash, EasyPaisa, and Direct Bank Transfer (1Link)." },
-    { category: "payments", question: "Refund Policy?", answer: "We offer a 'Filing Guarantee'. If we cannot file your return due to a technical error on our end, you receive a 100% refund immediately." },
-    { category: "account", question: "Is my data private?", answer: "Your financial data is seen ONLY by our automated engine and (if selected) your assigned Chartered Accountant. We never sell data to third parties." },
+const taxFilingFaqs = [
+  {
+    question: "What documents do I need to file my personal tax return?",
+    answer: "You'll need: your CNIC, salary slips or employment certificate, bank statements for the full tax year, details of any rental income, investment or savings details, and any charitable donation receipts. Our team provides a complete document checklist after you place your order.",
+  },
+  {
+    question: "What if I made an error in my filed tax return?",
+    answer: "FBR allows you to file a revised tax return within 5 years of the original filing date. If Pak Filer made an error in your filing, we will revise it at no additional charge. Errors in self-submitted information may require a revision fee.",
+  },
+  {
+    question: "What is a Wealth Statement and do I need to file it?",
+    answer: "A Wealth Statement (also called a Statement of Assets and Liabilities) is a declaration of your total assets and liabilities at the end of the tax year. It is mandatory for all individuals whose last filed return shows taxable income, and it must reconcile with the previous year's statement. Pak Filer prepares the wealth statement as part of your tax return filing.",
+  },
+  {
+    question: "What penalties apply for late tax filing in Pakistan?",
+    answer: "FBR imposes a minimum penalty of Rs 1,000 per month for late filing of individual returns, and higher penalties for businesses. Additionally, late filers may face surcharges on unpaid tax and, in severe cases, audit proceedings. Filing on time — or even late with Pak Filer's help — avoids escalating penalties.",
+  },
 ];
 
-// --- 3D ORACLE HERO ---
-function OracleHero({ searchQuery, setSearchQuery }: any) {
-    const heroRef = useRef<HTMLDivElement>(null);
-    const { scrollY } = useScroll();
-    const y1 = useTransform(scrollY, [0, 500], [0, 200]);
+const ntnGstFaqs = [
+  {
+    question: "How can I check if I already have an NTN?",
+    answer: "You can verify your NTN status on the FBR website at www.fbr.gov.pk using your CNIC. If you have a CNIC, you may already have an NTN assigned to it. However, having an NTN doesn't automatically make you an active filer — you still need to file returns annually.",
+  },
+  {
+    question: "How long does NTN registration take?",
+    answer: "With complete documentation, NTN registration for salaried individuals and sole proprietors is typically completed within 1–2 working days. Partnership, company, and NPO NTNs take 2–3 working days due to additional verification requirements.",
+  },
+  {
+    question: "Is GST registration mandatory for all businesses?",
+    answer: "No. GST/Sales Tax registration is mandatory for manufacturers with annual supplies exceeding Rs 10 million, all importers, and certain categories of service providers. Businesses below the threshold may register voluntarily to claim input tax credits. Contact Pak Filer for a free eligibility assessment.",
+  },
+  {
+    question: "What is STRN and how is it different from NTN?",
+    answer: "NTN is your Income Tax registration number. STRN (Sales Tax Registration Number) is your Sales Tax/GST registration number. Both are issued by FBR but serve different tax purposes. Businesses that deal in taxable goods or services typically need both.",
+  },
+];
 
-    useEffect(() => {
-        const handleMouseMove = (e: MouseEvent) => {
-            if (heroRef.current) {
-                const rect = heroRef.current.getBoundingClientRect();
-                const x = ((e.clientX - rect.left) / rect.width) * 100;
-                const y = ((e.clientY - rect.top) / rect.height) * 100;
-                heroRef.current.style.setProperty('--mouse-x', `${x}%`);
-                heroRef.current.style.setProperty('--mouse-y', `${y}%`);
-            }
-        };
-        window.addEventListener("mousemove", handleMouseMove);
-        return () => window.removeEventListener("mousemove", handleMouseMove);
-    }, []);
+const billingFaqs = [
+  {
+    question: "What payment methods does Pak Filer accept?",
+    answer: "We accept all major payment methods available in Pakistan, including bank transfer, JazzCash, EasyPaisa, credit/debit cards, and online banking. Payment details are provided at checkout.",
+  },
+  {
+    question: "What is Pak Filer's refund policy?",
+    answer: "We offer a full refund if we are unable to complete your service due to a limitation on our end. If the service cannot be completed due to incorrect or incomplete information provided by the client, a partial fee may be retained for work already completed. Full refund policy is detailed in our Terms & Conditions.",
+  },
+  {
+    question: "Are there any additional government fees on top of Pak Filer's service fee?",
+    answer: "For most services (personal tax filing, NTN registration, IRIS update), there are no additional government fees. For business incorporation and GST registration, SECP and FBR may charge government fees — these are always communicated upfront and listed separately from our professional service fee.",
+  },
+];
 
-    return (
-        <section
-            ref={heroRef}
-            className="relative h-[80vh] min-h-[700px] flex flex-col items-center justify-center overflow-hidden bg-[#052e16] text-white isolate pt-20"
-        >
-            <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#052e16] via-[#0E552F] to-[#052e16]">
-                <div className="absolute inset-0 opacity-20 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px]" />
-                <div className="absolute top-[-20%] left-[-10%] w-[60vw] h-[60vw] bg-[#45745B] rounded-full mix-blend-screen filter blur-[150px] opacity-20 animate-pulse" />
-                <div className="absolute bottom-[-20%] right-[-10%] w-[50vw] h-[50vw] bg-[#82A492] rounded-full mix-blend-screen filter blur-[120px] opacity-10" />
-                <div className="absolute inset-0 opacity-40 pointer-events-none mix-blend-soft-light transition-opacity duration-300" style={{ background: `radial-gradient(circle 800px at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,0.1), transparent)` }} />
-            </div>
+const processFaqs = [
+  {
+    question: "How will I know when my service is complete?",
+    answer: "We provide status updates via WhatsApp or email throughout the process. Upon completion, you will receive a confirmation message along with relevant documents — such as your FBR filing acknowledgment, NTN certificate, or SECP incorporation certificate — via WhatsApp or email.",
+  },
+  {
+    question: "What if my service takes longer than the stated timeline?",
+    answer: "Our stated timelines are for standard cases with complete documentation. Delays can occasionally occur due to FBR system issues, public holidays, or if additional documentation is required. We always communicate delays proactively and keep you informed.",
+  },
+  {
+    question: "Do I need to come to your office?",
+    answer: "No. Pak Filer is a fully online service. You never need to visit any office. All document submission, communication, and service delivery is handled remotely through WhatsApp, email, or our secure online portal.",
+  },
+];
 
-            <motion.div style={{ y: y1 }} className="container mx-auto px-4 relative z-10 flex flex-col items-center max-w-4xl text-center">
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-xs font-semibold tracking-widest uppercase text-emerald-300 mb-8">
-                    <Sparkles className="w-3 h-3" />
-                    <span>Knowledge Base</span>
-                </motion.div>
-
-                <motion.h1 initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }} className="text-5xl md:text-7xl font-bold tracking-tighter mb-8 leading-tight">
-                    The <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-amber-200">Oracle.</span>
-                </motion.h1>
-
-                <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="w-full max-w-2xl relative group">
-                    <div className="absolute inset-0 bg-emerald-500/20 blur-xl rounded-2xl group-hover:bg-emerald-400/30 transition-all duration-500" />
-                    <div className="relative bg-[#0E552F]/80 backdrop-blur-xl border border-white/20 rounded-2xl p-2 flex items-center shadow-2xl">
-                        <Search className="w-6 h-6 text-emerald-200 ml-4 shrink-0" />
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="How do I file my taxes?"
-                            className="w-full bg-transparent border-none text-xl text-white placeholder-white/40 focus:ring-0 px-4 py-4"
-                        />
-                    </div>
-                </motion.div>
-
-                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-8 text-emerald-100/60 font-light text-lg">
-                    Search hundreds of articles or browse by category below.
-                </motion.p>
-            </motion.div>
-        </section>
-    );
-}
-
-// --- GLASS ACCORDION ITEM ---
-const FAQItem = ({ faq, isOpen, toggle }: any) => {
-    return (
-        <motion.div
-            layout
-            initial={{ opacity: 0, marginBottom: -10 }}
-            animate={{ opacity: 1, marginBottom: 16 }}
-            exit={{ opacity: 0, marginBottom: -10 }}
-            className={cn(
-                "group rounded-2xl border transition-all duration-300 overflow-hidden",
-                isOpen
-                    ? "bg-white border-emerald-500/30 shadow-[0_10px_40px_-10px_rgba(5,46,22,0.1)]"
-                    : "bg-white/50 border-gray-200 hover:bg-white hover:border-emerald-200"
-            )}
-        >
-            <button onClick={toggle} className="w-full flex items-center justify-between p-6 text-left">
-                <span className={cn("text-lg font-bold transition-colors", isOpen ? "text-[#052e16]" : "text-gray-700")}>
-                    {faq.question}
-                </span>
-                <div className={cn("w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300", isOpen ? "bg-emerald-100 text-[#0E552F] rotate-180" : "bg-gray-100 text-gray-500 group-hover:bg-emerald-50")}>
-                    <ChevronDown className="w-5 h-5" />
-                </div>
-            </button>
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                    >
-                        <div className="px-6 pb-6 text-gray-600 leading-relaxed font-light border-t border-gray-100 pt-4">
-                            {faq.answer}
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </motion.div>
-    );
-};
+const allFaqs = [
+  ...generalTaxFaqs,
+  ...taxFilingFaqs,
+  ...ntnGstFaqs,
+  ...billingFaqs,
+  ...processFaqs,
+];
 
 export default function FAQ() {
-    const [searchQuery, setSearchQuery] = useState("");
-    const [activeCategory, setActiveCategory] = useState("all");
-    const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const [search, setSearch] = useState("");
 
-    const filteredFaqs = useMemo(() => {
-        return FAQS.filter((faq) => {
-            const matchesSearch = faq.question.toLowerCase().includes(searchQuery.toLowerCase()) || faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
-            const matchesCategory = activeCategory === "all" || faq.category === activeCategory;
-            return matchesSearch && matchesCategory;
-        });
-    }, [searchQuery, activeCategory]);
+  const filteredFaqs = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return allFaqs;
 
-    return (
-        <div className="bg-[#FAFAF9] min-h-screen">
-            <OracleHero searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+    return allFaqs.filter((faq) => faq.question.toLowerCase().includes(query) || faq.answer.toLowerCase().includes(query));
+  }, [search]);
 
-            {/* --- CONTENT SECTION --- */}
-            <section className="-mt-20 relative z-20 pb-32 container mx-auto px-4 max-w-5xl">
+  return (
+    <div className="bg-white">
+      <SEOHead
+        title="Frequently Asked Questions | Pakistan Tax Filing FAQ | Pak Filer"
+        description="Find answers to all your questions about income tax filing, NTN registration, GST, business compliance, and Pak Filer's services. Comprehensive Pakistan tax FAQ."
+        canonical="https://pakfiler.com/faq"
+      />
 
-                {/* Category Pills */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="flex flex-wrap justify-center gap-2 mb-12 bg-white/80 backdrop-blur-xl p-2 rounded-[2rem] shadow-xl border border-white/50 w-fit mx-auto"
-                >
-                    {CATEGORIES.map((cat) => (
-                        <button
-                            key={cat.id}
-                            onClick={() => { setActiveCategory(cat.id); setOpenIndex(null); }}
-                            className={cn(
-                                "px-6 py-3 rounded-full text-sm font-bold transition-all flex items-center gap-2",
-                                activeCategory === cat.id
-                                    ? "bg-[#0E552F] text-white shadow-lg shadow-emerald-900/10"
-                                    : "text-gray-500 hover:bg-gray-100 hover:text-emerald-800"
-                            )}
-                        >
-                            {cat.icon && <cat.icon className="w-4 h-4" />}
-                            {cat.label}
-                        </button>
-                    ))}
-                </motion.div>
-
-                {/* FAQ Grid */}
-                <div className="grid gap-4">
-                    <AnimatePresence mode="popLayout">
-                        {filteredFaqs.length > 0 ? (
-                            filteredFaqs.map((faq, index) => (
-                                <FAQItem
-                                    key={index}
-                                    faq={faq}
-                                    isOpen={openIndex === index}
-                                    toggle={() => setOpenIndex(openIndex === index ? null : index)}
-                                />
-                            ))
-                        ) : (
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20 text-gray-400">
-                                <Search className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                                <p className="text-xl">No answers found for "{searchQuery}"</p>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
-
-                {/* Support Block */}
-                <div className="mt-24 p-1 bg-gradient-to-r from-emerald-500/20 to-amber-500/20 rounded-[2.5rem]">
-                    <div className="bg-[#052e16] rounded-[2.3rem] p-12 text-center relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl" />
-
-                        <div className="relative z-10">
-                            <h3 className="text-3xl font-bold text-white mb-4">Still Stumping The Oracle?</h3>
-                            <p className="text-emerald-100/60 mb-8 max-w-xl mx-auto">
-                                Our human experts are standing by. We answer 95% of queries within 15 minutes during business hours.
-                            </p>
-                            <div className="flex justify-center gap-4">
-                                <Link to="mailto:support@pakfiler.com">
-                                    <button className="px-8 py-3 bg-white text-[#052e16] font-bold rounded-xl hover:bg-emerald-50 transition-colors">
-                                        Email Support
-                                    </button>
-                                </Link>
-                                <button className="px-8 py-3 border border-emerald-500/30 text-emerald-300 font-bold rounded-xl hover:bg-emerald-500/10 transition-colors">
-                                    Live Chat
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </section>
-
-            <FinalCTA />
+      <section className="relative pt-32 pb-20 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1A8549] to-[#146B3A]" />
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: `radial-gradient(circle at 20% 20%, white 1px, transparent 1px)`, backgroundSize: "40px 40px" }} />
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg viewBox="0 0 1440 80" fill="none" className="w-full"><path d="M0 80L60 70C120 60 240 40 360 35C480 30 600 40 720 45C840 50 960 50 1080 45C1200 40 1320 30 1380 25L1440 20V80H0Z" fill="white"/></svg>
         </div>
-    );
+
+        <div className="container mx-auto px-4 relative z-10 text-center">
+          <span className="text-xs font-semibold uppercase tracking-widest text-white/70 mb-3 block">FAQs</span>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white leading-tight mb-6">
+            Your Tax Questions — Answered by Experts
+          </h1>
+          <p className="text-lg text-white/80 max-w-3xl mx-auto leading-relaxed mb-10">
+            Browse our comprehensive FAQ covering income tax, NTN registration, GST, business compliance, our platform, and pricing. Can't find your answer? Contact us directly.
+          </p>
+
+          <div className="max-w-2xl mx-auto">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search your question..."
+                className="w-full rounded-3xl border border-white/30 bg-white/10 py-4 pl-12 pr-4 text-white placeholder-white/60 focus:border-white focus:ring-2 focus:ring-white/20 outline-none"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {search ? (
+        <FAQSection
+          title={`Search results for “${search}”`}
+          subtitle={`Showing ${filteredFaqs.length} result${filteredFaqs.length === 1 ? "" : "s"}.`}
+          faqs={filteredFaqs}
+        />
+      ) : (
+        <>
+          <FAQSection
+            title="General Tax Questions"
+            subtitle="Common questions about filing, compliance, and the tax system in Pakistan."
+            faqs={generalTaxFaqs}
+          />
+          <FAQSection
+            title="Tax Filing Questions"
+            subtitle="Answers to help make your filing process smoother."
+            faqs={taxFilingFaqs}
+          />
+          <FAQSection
+            title="NTN & GST Registration Questions"
+            subtitle="Key details about NTN, GST, and how registration works."
+            faqs={ntnGstFaqs}
+          />
+          <FAQSection
+            title="Billing & Pricing Questions"
+            subtitle="Questions about payments, refunds, and government fees."
+            faqs={billingFaqs}
+          />
+          <FAQSection
+            title="Process & Timeline Questions"
+            subtitle="What to expect while we handle your filing or registration."
+            faqs={processFaqs}
+          />
+        </>
+      )}
+
+      <section className="py-20 bg-[#F7FAF8]">
+        <div className="container mx-auto px-4 max-w-4xl text-center">
+          <h2 className="text-3xl font-display font-bold text-[#1F2A2A] mb-4">Need Personal Support?</h2>
+          <p className="text-[#4A5A5A] mb-8">
+            Our team is happy to help you select the right service or answer a question about your filing.
+          </p>
+          <Link to="/contact" className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#146B3A] text-white font-bold rounded-xl shadow-lg hover:bg-[#0f5730] transition">
+            Contact Support
+          </Link>
+        </div>
+      </section>
+
+      <FinalCTA />
+    </div>
+  );
 }

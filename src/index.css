@@ -135,11 +135,15 @@
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: 'Outfit', sans-serif;
   }
 
   /* Smooth scrolling */
@@ -185,7 +189,8 @@
 
   /* Glass Card */
   .glass-card {
-    @apply bg-card/80 backdrop-blur-md border border-border/50;
+    @apply bg-card/80 backdrop-blur-md;
+    border: 1px solid hsla(var(--border), 0.5);
     box-shadow: var(--shadow-lg);
   }
 
@@ -623,22 +628,28 @@
     display: none;
   }
 
-  /* Custom scrollbar */
-  .scrollbar-custom {
+  /* Premium Gold Scrollbar */
+  .scrollbar-premium {
     scrollbar-width: thin;
-    scrollbar-color: hsl(var(--accent)) transparent;
+    scrollbar-color: rgba(252, 211, 77, 0.4) transparent;
   }
 
-  .scrollbar-custom::-webkit-scrollbar {
+  .scrollbar-premium::-webkit-scrollbar {
     width: 6px;
   }
 
-  .scrollbar-custom::-webkit-scrollbar-track {
+  .scrollbar-premium::-webkit-scrollbar-track {
     background: transparent;
+    margin-block: 4px;
   }
 
-  .scrollbar-custom::-webkit-scrollbar-thumb {
-    background: hsl(var(--accent));
-    border-radius: 3px;
+  .scrollbar-premium::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(252, 211, 77, 0.3) 0%, rgba(252, 211, 77, 0.6) 50%, rgba(252, 211, 77, 0.3) 100%);
+    border-radius: 20px;
+    cursor: pointer;
+  }
+
+  .scrollbar-premium::-webkit-scrollbar-thumb:hover {
+    background: rgba(252, 211, 77, 0.8);
   }
 }

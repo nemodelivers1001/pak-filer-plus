@@ -1,11 +1,12 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Save, SkipForward } from "lucide-react";
+import { ArrowLeft, ArrowRight, Save, User, CreditCard, Calendar, Mail, Phone, MapPin, Building2, Calculator } from "lucide-react";
 import { GradientButton } from "@/components/ui/GradientButton";
+import { HolographicInput } from "@/components/ui/HolographicInput";
 import { GlassCard } from "@/components/ui/GlassCard";
-import { FormInput } from "@/components/ui/FormInput";
 import { fadeInUp } from "@/lib/animations";
 import { SubStep } from "@/hooks/useTaxFiling";
 import { useState, useEffect } from "react";
+import { SectionWizard } from "./onboarding/SectionWizard";
 
 interface StepFormProps {
   stepId: string;
@@ -13,6 +14,8 @@ interface StepFormProps {
   onDataChange: (data: Record<string, unknown>) => void;
   onComplete: () => void;
   onNext: () => void;
+  currentStepSubSteps?: SubStep[]; // New: Pass all substeps of current step to wizard
+
   onPrevious: () => void;
   canGoNext: boolean;
   canGoPrevious: boolean;
@@ -26,21 +29,22 @@ interface FormField {
   placeholder: string;
   required?: boolean;
   hint?: string;
+  icon?: React.ReactNode;
 }
 
 // Form field configurations for each sub-step
 const formConfigs: Record<string, { fields: FormField[] }> = {
   'basic-info': {
     fields: [
-      { name: 'fullName', label: 'Full Name (as per CNIC)', type: 'text', placeholder: 'Enter your full name', required: true },
-      { name: 'cnic', label: 'CNIC Number', type: 'text', placeholder: '00000-0000000-0', required: true, hint: 'Format: 00000-0000000-0' },
-      { name: 'ntn', label: 'NTN Number', type: 'text', placeholder: 'Enter NTN if available' },
-      { name: 'dateOfBirth', label: 'Date of Birth', type: 'date', placeholder: '', required: true },
-      { name: 'fatherName', label: "Father's Name", type: 'text', placeholder: "Enter father's name", required: true },
-      { name: 'email', label: 'Email Address', type: 'email', placeholder: 'you@example.com', required: true },
-      { name: 'phone', label: 'Mobile Number', type: 'tel', placeholder: '+92 300 0000000', required: true },
-      { name: 'address', label: 'Residential Address', type: 'text', placeholder: 'Enter your complete address', required: true },
-      { name: 'city', label: 'City', type: 'text', placeholder: 'Enter city', required: true },
+      { name: 'fullName', label: 'Full Name (as per CNIC)', type: 'text', placeholder: 'Enter your full name', required: true, icon: <User /> },
+      { name: 'cnic', label: 'CNIC Number', type: 'text', placeholder: '00000-0000000-0', required: true, hint: 'Format: 00000-0000000-0', icon: <CreditCard /> },
+      { name: 'ntn', label: 'NTN Number', type: 'text', placeholder: 'Enter NTN if available', icon: <Calculator /> },
+      { name: 'dateOfBirth', label: 'Date of Birth', type: 'date', placeholder: '', required: true, icon: <Calendar /> },
+      { name: 'fatherName', label: "Father's Name", type: 'text', placeholder: "Enter father's name", required: true, icon: <User /> },
+      { name: 'email', label: 'Email Address', type: 'email', placeholder: 'you@example.com', required: true, icon: <Mail /> },
+      { name: 'phone', label: 'Mobile Number', type: 'tel', placeholder: '+92 300 0000000', required: true, icon: <Phone /> },
+      { name: 'address', label: 'Residential Address', type: 'text', placeholder: 'Enter your complete address', required: true, icon: <MapPin /> },
+      { name: 'city', label: 'City', type: 'text', placeholder: 'Enter city', required: true, icon: <Building2 /> },
     ],
   },
   'salary': {
@@ -250,6 +254,7 @@ export function StepForm({
   canGoNext,
   canGoPrevious,
   isLastStep,
+  currentStepSubSteps = [],
 }: StepFormProps) {
   const config = formConfigs[subStep.id] || defaultConfig;
   const [formData, setFormData] = useState<Record<string, string>>(
@@ -284,6 +289,41 @@ export function StepForm({
 
   const isSummaryStep = stepId === 'summary';
 
+  // Handle Wizard Completion
+  const handleWizardComplete = (selectedIds: string[]) => {
+    // Save selected categories to the wizard substep data
+    onDataChange({ selectedCategories: selectedIds });
+    // Trigger completion logic (which handles visibility updates in useTaxFiling)
+    // We need to wait a tick to ensure state updates before completing
+    setTimeout(() => {
+      onComplete();
+      onNext();
+    }, 0);
+  };
+
+  if (subStep.isWizard) {
+    return (
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={subStep.id}
+          variants={fadeInUp}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+        >
+          <SectionWizard
+            title={subStep.title}
+            description={subStep.description}
+            options={currentStepSubSteps}
+            onComplete={handleWizardComplete}
+            onPrevious={onPrevious}
+            canGoPrevious={canGoPrevious}
+          />
+        </motion.div>
+      </AnimatePresence>
+    );
+  }
+
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -295,78 +335,107 @@ export function StepForm({
         className="space-y-6"
       >
         {/* Form Header */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-foreground mb-2">{subStep.title}</h2>
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold mb-2 text-[#FCD34D] drop-shadow-[0_0_10px_rgba(252,211,77,0.3)]">
+            {subStep.title}
+          </h2>
           {subStep.description && (
-            <p className="text-muted-foreground">{subStep.description}</p>
+            <p className="text-white/80 text-lg">{subStep.description}</p>
           )}
         </div>
 
-        {/* Form Fields */}
+        {/* Form Fields - Floating Invisible Container */}
         {!isSummaryStep ? (
-          <GlassCard className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="relative">
+            <motion.div
+              className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10 px-4 md:px-0"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: {
+                    staggerChildren: 0.1
+                  }
+                }
+              }}
+              initial="hidden"
+              animate="visible"
+            >
               {config.fields.map((field) => (
-                <div key={field.name} className={field.type === 'text' && field.name.includes('address') ? 'md:col-span-2' : ''}>
-                  <FormInput
+                <motion.div
+                  key={field.name}
+                  className={field.type === 'text' && field.name.includes('address') ? 'md:col-span-2' : ''}
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    visible: { opacity: 1, y: 0 }
+                  }}
+                >
+                  <HolographicInput
                     label={field.label}
                     type={field.type}
                     placeholder={field.placeholder}
                     value={formData[field.name] || ''}
                     onChange={(e) => handleFieldChange(field.name, e.target.value)}
                     onBlur={() => handleFieldBlur(field.name)}
-                    hint={field.hint}
                     error={touched[field.name] && field.required && !formData[field.name] ? 'This field is required' : undefined}
+                    className="text-white placeholder:text-white/20"
+                    containerClassName="mb-0"
+                    icon={field.icon}
                   />
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
 
-            {/* Auto-save indicator */}
-            <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
-              <Save className="h-3 w-3" />
-              <span>Auto-saved</span>
+            {/* Auto-save & Status - Floating */}
+            <div className="mt-8 pt-6 border-t border-white/10 flex items-center justify-between text-xs text-white/40 px-4 md:px-0">
+              <div className="flex items-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-[#4ade80] animate-pulse"></div>
+                <span>Secure Connection • Auto-saving</span>
+              </div>
+              <div className="font-mono opacity-50">ID: {subStep.id.toUpperCase()}</div>
             </div>
-          </GlassCard>
+          </div>
         ) : (
-          <GlassCard className="p-6">
-            <div className="text-center py-8">
+          <GlassCard className="p-8 text-center relative overflow-hidden group bg-white/5 border-white/10">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="relative z-10">
+              <h3 className="text-xl font-bold mb-2">Review Summary</h3>
               <p className="text-muted-foreground">
-                Review your information in the summary. Click on any section in the stepper to make changes.
+                Review your information below. Click on any section in the stepper to make changes.
               </p>
             </div>
           </GlassCard>
         )}
 
-        {/* Navigation Buttons */}
-        <div className="flex items-center justify-between pt-4">
-          <GradientButton
-            variant="ghost"
-            onClick={onPrevious}
-            disabled={!canGoPrevious}
-            icon={<ArrowLeft className="h-4 w-4" />}
-          >
-            Previous
-          </GradientButton>
+        {/* Action Bar */}
+        {/* Action Bar - Premium Static Docker */}
+        <div className="mt-12 p-6 rounded-2xl bg-[#020b06]/60 backdrop-blur-md border border-white/10 flex items-center justify-between shadow-lg">
+          <div className="flex items-center gap-4">
+            <GradientButton
+              variant="ghost"
+              onClick={onPrevious}
+              disabled={!canGoPrevious}
+              icon={<ArrowLeft className="h-5 w-5" />}
+              className="text-white/60 hover:text-white"
+            >
+              Previous
+            </GradientButton>
 
-          <div className="flex items-center gap-3">
-            {!isLastStep && !isSummaryStep && (
-              <GradientButton
-                variant="outline"
-                onClick={handleSkip}
-                icon={<SkipForward className="h-4 w-4" />}
-              >
-                Skip for now
-              </GradientButton>
-            )}
+            <div className="hidden md:flex items-center gap-2 text-xs text-white/40 bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+              <Save className="h-3 w-3 text-[#4ade80]" />
+              <span>Auto-saving</span>
+            </div>
+          </div>
 
+          <div className="flex items-center gap-4">
             <GradientButton
               variant="primary"
               onClick={handleContinue}
-              icon={<ArrowRight className="h-4 w-4" />}
+              icon={<ArrowRight className="h-5 w-5" />}
               iconPosition="right"
+              className="h-12 px-8 text-lg font-bold shadow-[0_0_20px_rgba(252,211,77,0.3)] hover:shadow-[0_0_30px_rgba(252,211,77,0.5)] transition-all duration-300 transform hover:-translate-y-1"
             >
-              {isLastStep ? 'Submit' : 'Save & Continue'}
+              {isLastStep ? 'Submit Application' : 'Save & Continue'}
             </GradientButton>
           </div>
         </div>

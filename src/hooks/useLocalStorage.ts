@@ -24,22 +24,26 @@ export function useLocalStorage<T>(
   const [storedValue, setStoredValue] = useState<T>(readValue);
 
   // Return a wrapped version of useState's setter function
+  // Return a wrapped version of useState's setter function
   const setValue = useCallback(
     (value: SetValue<T>) => {
       try {
-        const valueToStore = value instanceof Function ? value(storedValue) : value;
-        setStoredValue(valueToStore);
-        
-        if (typeof window !== 'undefined') {
-          window.localStorage.setItem(key, JSON.stringify(valueToStore));
-          // Dispatch event so other hooks using same key can update
-          window.dispatchEvent(new StorageEvent('storage', { key }));
-        }
+        setStoredValue((prevValue) => {
+          const valueToStore = value instanceof Function ? value(prevValue) : value;
+
+          if (typeof window !== 'undefined') {
+            window.localStorage.setItem(key, JSON.stringify(valueToStore));
+            // Dispatch event so other hooks using same key can update
+            window.dispatchEvent(new StorageEvent('storage', { key }));
+          }
+
+          return valueToStore;
+        });
       } catch (error) {
         console.warn(`Error setting localStorage key "${key}":`, error);
       }
     },
-    [key, storedValue]
+    [key]
   );
 
   // Remove value from storage

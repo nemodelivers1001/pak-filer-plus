@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { buttonPress } from "@/lib/animations";
 
 interface GradientButtonProps {
-  variant?: "primary" | "secondary" | "outline" | "ghost";
+  variant?: "primary" | "secondary" | "outline" | "ghost" | "danger";
   size?: "sm" | "md" | "lg";
   loading?: boolean;
   icon?: ReactNode;
@@ -34,34 +34,39 @@ export const GradientButton = forwardRef<HTMLButtonElement, GradientButtonProps>
   ) => {
     const baseClasses = cn(
       "relative inline-flex items-center justify-center gap-2 font-medium",
-      "rounded-lg transition-all duration-300 ease-out",
+      "rounded-full transition-all duration-300 ease-out", // Rounded-full for Golden Touch
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
       "disabled:pointer-events-none disabled:opacity-50"
     );
 
     const variantClasses = {
+      // Golden Primary Variant
       primary: cn(
-        "text-primary-foreground",
-        "bg-gradient-to-r from-primary to-secondary",
-        "hover:shadow-glow hover:brightness-110",
-        "active:brightness-95"
+        "text-[#0E552F]", // Dark Green Text for contrast on Gold
+        "bg-gradient-to-r from-[#FCD34D] to-[#fbbf24]", // Gold Gradient
+        "border border-[#FCD34D]/50",
+        "hover:shadow-[0_0_20px_rgba(252,211,77,0.5)] hover:brightness-110",
+        "active:brightness-95 overflow-hidden group font-bold"
       ),
       secondary: cn(
-        "text-primary",
-        "bg-gradient-to-r from-soft to-accent/50",
-        "hover:from-accent/60 hover:to-soft",
-        "border border-accent/30"
+        "text-white",
+        "bg-white/10 hover:bg-white/20",
+        "border border-white/20"
       ),
       outline: cn(
-        "text-primary bg-transparent",
-        "border-2 border-primary/80",
-        "hover:bg-primary/5 hover:border-primary"
+        "text-white bg-transparent",
+        "border-2 border-white/20",
+        "hover:bg-white/5 hover:border-[#FCD34D]/50 hover:text-[#FCD34D]"
       ),
       ghost: cn(
-        "text-primary bg-transparent",
-        "hover:bg-primary/10",
-        "active:bg-primary/15"
+        "text-white/70 bg-transparent",
+        "hover:bg-white/5 hover:text-[#FCD34D]"
       ),
+      danger: cn(
+        "text-white",
+        "bg-gradient-to-r from-red-500 to-red-600",
+        "hover:shadow-lg hover:shadow-red-500/25"
+      )
     };
 
     const sizeClasses = {
@@ -107,11 +112,16 @@ export const GradientButton = forwardRef<HTMLButtonElement, GradientButtonProps>
           </span>
         )}
 
-        <span className={cn("flex items-center gap-2", loading && "opacity-0")}>
+        <span className={cn("flex items-center gap-2 relative z-10", loading && "opacity-0")}>
           {icon && iconPosition === "left" && icon}
           {children}
           {icon && iconPosition === "right" && icon}
         </span>
+
+        {/* Shine Effect Overlay */}
+        {variant === 'primary' && !disabled && !loading && (
+          <div className="absolute inset-0 -translate-x-[100%] group-hover:animate-[shine_1.5s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent z-0" />
+        )}
       </motion.button>
     );
   }

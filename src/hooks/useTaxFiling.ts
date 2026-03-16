@@ -7,7 +7,13 @@ export interface SubStep {
   title: string;
   description?: string;
   completed: boolean;
+  id: string;
+  title: string;
+  description?: string;
+  completed: boolean;
   data: Record<string, unknown>;
+  isVisible?: boolean; // New: Controls visibility based on wizard selection
+  isWizard?: boolean;  // New: Identifies this as a selection step
 }
 
 export interface Step {
@@ -16,7 +22,9 @@ export interface Step {
   description: string;
   icon: string;
   subSteps: SubStep[];
+  subSteps: SubStep[];
   completed: boolean;
+  isVisible?: boolean;
 }
 
 export interface TaxFilingState {
@@ -37,7 +45,7 @@ const createInitialSteps = (): Step[] => [
     icon: 'User',
     completed: false,
     subSteps: [
-      { id: 'basic-info', title: 'Basic Information', completed: false, data: {} },
+      { id: 'basic-info', title: 'Basic Information', completed: false, data: {}, isVisible: true },
     ],
   },
   {
@@ -47,15 +55,16 @@ const createInitialSteps = (): Step[] => [
     icon: 'Banknote',
     completed: false,
     subSteps: [
-      { id: 'salary', title: 'Salary Income', completed: false, data: {} },
-      { id: 'pension', title: 'Pension Income', completed: false, data: {} },
-      { id: 'agriculture', title: 'Agriculture Income', completed: false, data: {} },
-      { id: 'commission', title: 'Commission/Services Income', completed: false, data: {} },
-      { id: 'rent-property', title: 'Rent/Property Sale Income', completed: false, data: {} },
-      { id: 'profit-savings', title: 'Profit on Savings Income', completed: false, data: {} },
-      { id: 'dividend', title: 'Dividend/Gain Income', completed: false, data: {} },
-      { id: 'bonus', title: 'Bonus', completed: false, data: {} },
-      { id: 'other-income', title: 'Other Income', completed: false, data: {} },
+      { id: 'income-wizard', title: 'Income Selection', completed: false, data: {}, isVisible: true, isWizard: true, description: "Select your income sources for the year" },
+      { id: 'salary', title: 'Salary Income', completed: false, data: {}, isVisible: false },
+      { id: 'pension', title: 'Pension Income', completed: false, data: {}, isVisible: false },
+      { id: 'agriculture', title: 'Agriculture Income', completed: false, data: {}, isVisible: false },
+      { id: 'commission', title: 'Commission/Services Income', completed: false, data: {}, isVisible: false },
+      { id: 'rent-property', title: 'Rent/Property Sale Income', completed: false, data: {}, isVisible: false },
+      { id: 'profit-savings', title: 'Profit on Savings Income', completed: false, data: {}, isVisible: false },
+      { id: 'dividend', title: 'Dividend/Gain Income', completed: false, data: {}, isVisible: false },
+      { id: 'bonus', title: 'Bonus', completed: false, data: {}, isVisible: false },
+      { id: 'other-income', title: 'Other Income', completed: false, data: {}, isVisible: false },
     ],
   },
   {
@@ -65,7 +74,7 @@ const createInitialSteps = (): Step[] => [
     icon: 'BadgePercent',
     completed: false,
     subSteps: [
-      { id: 'user-credits', title: 'User Tax Credits', completed: false, data: {} },
+      { id: 'user-credits', title: 'User Tax Credits', completed: false, data: {}, isVisible: true },
     ],
   },
   {
@@ -75,10 +84,10 @@ const createInitialSteps = (): Step[] => [
     icon: 'Receipt',
     completed: false,
     subSteps: [
-      { id: 'bank-deduction', title: 'Bank Tax Deduction', completed: false, data: {} },
-      { id: 'vehicle-tax', title: 'Vehicle Details', completed: false, data: {} },
-      { id: 'utilities', title: 'Utilities Details', completed: false, data: {} },
-      { id: 'other-deductions', title: 'Other Tax Deductions', completed: false, data: {} },
+      { id: 'bank-deduction', title: 'Bank Tax Deduction', completed: false, data: {}, isVisible: true },
+      { id: 'vehicle-tax', title: 'Vehicle Details', completed: false, data: {}, isVisible: true },
+      { id: 'utilities', title: 'Utilities Details', completed: false, data: {}, isVisible: true },
+      { id: 'other-deductions', title: 'Other Tax Deductions', completed: false, data: {}, isVisible: true },
     ],
   },
   {
@@ -88,17 +97,18 @@ const createInitialSteps = (): Step[] => [
     icon: 'Landmark',
     completed: false,
     subSteps: [
-      { id: 'net-worth', title: 'Net Worth Summary', completed: false, data: {} },
-      { id: 'property', title: 'Property Details', completed: false, data: {} },
-      { id: 'vehicles', title: 'Vehicle Details', completed: false, data: {} },
-      { id: 'bank-accounts', title: 'Bank Account Details', completed: false, data: {} },
-      { id: 'insurance', title: 'Insurance Details', completed: false, data: {} },
-      { id: 'other-assets', title: 'Other Assets', completed: false, data: {} },
-      { id: 'cash-balance', title: 'Cash Balance', completed: false, data: {} },
-      { id: 'foreign-assets', title: 'Foreign Assets Details', completed: false, data: {} },
-      { id: 'possessions', title: 'Possessions Details', completed: false, data: {} },
-      { id: 'bank-loan', title: 'Bank Loan', completed: false, data: {} },
-      { id: 'other-liabilities', title: 'Other Liabilities', completed: false, data: {} },
+      { id: 'wealth-wizard', title: 'Wealth Selection', completed: false, data: {}, isVisible: true, isWizard: true, description: "Select your assets and liabilities" },
+      { id: 'net-worth', title: 'Net Worth Summary', completed: false, data: {}, isVisible: false },
+      { id: 'property', title: 'Property Details', completed: false, data: {}, isVisible: false },
+      { id: 'vehicles', title: 'Vehicle Details', completed: false, data: {}, isVisible: false },
+      { id: 'bank-accounts', title: 'Bank Account Details', completed: false, data: {}, isVisible: false },
+      { id: 'insurance', title: 'Insurance Details', completed: false, data: {}, isVisible: false },
+      { id: 'other-assets', title: 'Other Assets', completed: false, data: {}, isVisible: false },
+      { id: 'cash-balance', title: 'Cash Balance', completed: false, data: {}, isVisible: false },
+      { id: 'foreign-assets', title: 'Foreign Assets Details', completed: false, data: {}, isVisible: false },
+      { id: 'possessions', title: 'Possessions Details', completed: false, data: {}, isVisible: false },
+      { id: 'bank-loan', title: 'Bank Loan', completed: false, data: {}, isVisible: false },
+      { id: 'other-liabilities', title: 'Other Liabilities', completed: false, data: {}, isVisible: false },
     ],
   },
   {
@@ -108,7 +118,7 @@ const createInitialSteps = (): Step[] => [
     icon: 'CreditCard',
     completed: false,
     subSteps: [
-      { id: 'expense-info', title: 'Expense Information', completed: false, data: {} },
+      { id: 'expense-info', title: 'Expense Information', completed: false, data: {}, isVisible: true },
     ],
   },
   {
@@ -118,12 +128,12 @@ const createInitialSteps = (): Step[] => [
     icon: 'FileCheck',
     completed: false,
     subSteps: [
-      { id: 'personal-summary', title: 'Personal Information Summary', completed: false, data: {} },
-      { id: 'income-summary', title: 'Income Information Summary', completed: false, data: {} },
-      { id: 'credit-summary', title: 'Tax Credit Summary', completed: false, data: {} },
-      { id: 'deducted-summary', title: 'Tax Deducted Summary', completed: false, data: {} },
-      { id: 'wealth-summary', title: 'Wealth Statement Summary', completed: false, data: {} },
-      { id: 'expense-summary', title: 'Expense Summary', completed: false, data: {} },
+      { id: 'personal-summary', title: 'Personal Information Summary', completed: false, data: {}, isVisible: true },
+      { id: 'income-summary', title: 'Income Information Summary', completed: false, data: {}, isVisible: true },
+      { id: 'credit-summary', title: 'Tax Credit Summary', completed: false, data: {}, isVisible: true },
+      { id: 'deducted-summary', title: 'Tax Deducted Summary', completed: false, data: {}, isVisible: true },
+      { id: 'wealth-summary', title: 'Wealth Statement Summary', completed: false, data: {}, isVisible: true },
+      { id: 'expense-summary', title: 'Expense Summary', completed: false, data: {}, isVisible: true },
     ],
   },
   {
@@ -133,7 +143,7 @@ const createInitialSteps = (): Step[] => [
     icon: 'Send',
     completed: false,
     subSteps: [
-      { id: 'fbr-login', title: 'FBR/IRIS Portal Login', completed: false, data: {} },
+      { id: 'fbr-login', title: 'FBR/IRIS Portal Login', completed: false, data: {}, isVisible: true },
     ],
   },
 ];
@@ -156,9 +166,9 @@ export function useTaxFiling() {
   const currentStep = state.steps[state.currentStepIndex];
   const currentSubStep = currentStep?.subSteps[state.currentSubStepIndex];
 
-  // Calculate total progress
+  // Calculate total progress (only count visible steps)
   const totalSubSteps = useMemo(() => 
-    state.steps.reduce((acc, step) => acc + step.subSteps.length, 0),
+    state.steps.reduce((acc, step) => acc + step.subSteps.filter(s => s.isVisible !== false).length, 0),
     [state.steps]
   );
 
@@ -216,14 +226,38 @@ export function useTaxFiling() {
       const newSteps = [...prev.steps];
       const step = { ...newSteps[prev.currentStepIndex] };
       const subSteps = [...step.subSteps];
+      
+      const currentSubStep = subSteps[prev.currentSubStepIndex];
+      
+      // Mark as complete
       subSteps[prev.currentSubStepIndex] = {
-        ...subSteps[prev.currentSubStepIndex],
+        ...currentSubStep,
         completed: true,
       };
-      step.subSteps = subSteps;
+
+      // Wizard Logic: If this was a wizard step, update visibility of other steps
+      if (currentSubStep.isWizard && currentSubStep.data.selectedCategories) {
+        const selectedIds = currentSubStep.data.selectedCategories as string[];
+        
+        // Update visibility for all OTHER substeps in this step
+        step.subSteps = subSteps.map((sub, index) => {
+          if (index === prev.currentSubStepIndex) return sub; // Don't change the wizard itself
+          
+          // Enable transparency/visibility for selected items
+          return {
+            ...sub,
+            isVisible: selectedIds.includes(sub.id)
+          };
+        });
+      } else {
+        step.subSteps = subSteps;
+      }
       
       // Check if all sub-steps in this step are complete
-      const allSubStepsComplete = subSteps.every(s => s.completed);
+      const allSubStepsComplete = step.subSteps
+        .filter(s => s.isVisible !== false)
+        .every(s => s.completed);
+        
       step.completed = allSubStepsComplete;
       newSteps[prev.currentStepIndex] = step;
 
@@ -239,7 +273,18 @@ export function useTaxFiling() {
   const goToNext = useCallback(() => {
     setState((prev) => {
       const currentStep = prev.steps[prev.currentStepIndex];
-      const isLastSubStep = prev.currentSubStepIndex >= currentStep.subSteps.length - 1;
+      const currentSubStep = currentStep.subSteps[prev.currentSubStepIndex];
+      
+      // Find next visible sub-step index
+      let nextSubStepIndex = prev.currentSubStepIndex + 1;
+      while (
+        nextSubStepIndex < currentStep.subSteps.length && 
+        currentStep.subSteps[nextSubStepIndex].isVisible === false
+      ) {
+        nextSubStepIndex++;
+      }
+
+      const isLastSubStep = nextSubStepIndex >= currentStep.subSteps.length;
       const isLastStep = prev.currentStepIndex >= prev.steps.length - 1;
 
       if (isLastSubStep && isLastStep) {
@@ -259,7 +304,7 @@ export function useTaxFiling() {
       // Move to next sub-step
       return {
         ...prev,
-        currentSubStepIndex: prev.currentSubStepIndex + 1,
+        currentSubStepIndex: nextSubStepIndex,
         lastUpdated: new Date().toISOString(),
       };
     });
@@ -276,20 +321,34 @@ export function useTaxFiling() {
       }
 
       if (isFirstSubStep) {
-        // Move to previous step's last sub-step
+        // Move to previous step's last visible sub-step
         const prevStep = prev.steps[prev.currentStepIndex - 1];
+        let prevSubStepIndex = prevStep.subSteps.length - 1;
+        
+        // Find last visible substep
+        while (prevSubStepIndex >= 0 && prevStep.subSteps[prevSubStepIndex].isVisible === false) {
+          prevSubStepIndex--;
+        }
+
         return {
           ...prev,
           currentStepIndex: prev.currentStepIndex - 1,
-          currentSubStepIndex: prevStep.subSteps.length - 1,
+          currentSubStepIndex: prevSubStepIndex,
           lastUpdated: new Date().toISOString(),
         };
       }
 
-      // Move to previous sub-step
+      // Move to previous visible sub-step
+      let prevSubStepIndex = prev.currentSubStepIndex - 1;
+      const currentStep = prev.steps[prev.currentStepIndex];
+      
+      while (prevSubStepIndex >= 0 && currentStep.subSteps[prevSubStepIndex].isVisible === false) {
+        prevSubStepIndex--;
+      }
+
       return {
         ...prev,
-        currentSubStepIndex: prev.currentSubStepIndex - 1,
+        currentSubStepIndex: prevSubStepIndex,
         lastUpdated: new Date().toISOString(),
       };
     });
@@ -321,7 +380,7 @@ export function useTaxFiling() {
 
   // Check if can navigate
   const canGoNext = state.currentStepIndex < state.steps.length - 1 || 
-    state.currentSubStepIndex < currentStep?.subSteps.length - 1;
+    state.currentSubStepIndex < (state.steps[state.currentStepIndex]?.subSteps.length || 0) - 1;
   
   const canGoPrevious = state.currentStepIndex > 0 || state.currentSubStepIndex > 0;
 

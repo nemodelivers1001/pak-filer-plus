@@ -8,19 +8,20 @@ interface MeshBackgroundProps {
   children?: React.ReactNode;
 }
 
-export function MeshBackground({ 
-  variant = "default", 
+export function MeshBackground({
+  variant = "default",
   className,
   animated = false,
-  children 
+  children
 }: MeshBackgroundProps) {
   const baseClasses = "relative overflow-hidden";
-  
+
   const variantClasses = {
     default: "mesh-bg",
     hero: "mesh-bg-hero text-primary-foreground",
-    subtle: "bg-gradient-to-br from-soft/30 via-background to-accent/20",
-    dark: "bg-gradient-to-br from-primary via-secondary to-primary",
+    subtle: "bg-gradient-to-br from-[hsl(150,25%,36%)]/10 via-background to-[hsl(150,17%,58%)]/20",
+    dark: "bg-gradient-to-br from-[hsl(150,71%,19%)] via-[hsl(150,25%,36%)] to-[hsl(150,71%,19%)]",
+    vibrant: "bg-gradient-to-br from-[hsl(150,71%,19%)]/20 via-[hsl(150,17%,58%)]/10 to-[hsl(150,25%,36%)]/20",
   };
 
   return (
@@ -29,40 +30,43 @@ export function MeshBackground({
       {animated && (
         <>
           <motion.div
-            className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 rounded-full bg-gradient-to-br from-accent/30 to-transparent blur-3xl"
+            className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] rounded-full bg-gradient-to-br from-[hsl(150,71%,19%)]/30 to-[hsl(150,25%,36%)]/10 blur-[120px]"
             animate={{
-              x: [0, 50, 0],
-              y: [0, 30, 0],
-              scale: [1, 1.1, 1],
+              x: [0, 100, 0],
+              y: [0, 50, 0],
+              scale: [1, 1.2, 1],
+              opacity: [0.3, 0.6, 0.3],
             }}
             transition={{
-              duration: 8,
+              duration: 15,
               repeat: Infinity,
               ease: "easeInOut",
             }}
           />
           <motion.div
-            className="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 rounded-full bg-gradient-to-tl from-soft/40 to-transparent blur-3xl"
+            className="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-tl from-[hsl(150,17%,58%)]/40 to-[hsl(150,25%,81%)]/20 blur-[100px]"
             animate={{
-              x: [0, -30, 0],
-              y: [0, -50, 0],
-              scale: [1, 1.2, 1],
+              x: [0, -70, 0],
+              y: [0, -100, 0],
+              scale: [1, 1.3, 1],
+              opacity: [0.3, 0.5, 0.3],
             }}
             transition={{
-              duration: 10,
+              duration: 18,
               repeat: Infinity,
               ease: "easeInOut",
               delay: 1,
             }}
           />
           <motion.div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/3 h-1/3 rounded-full bg-gradient-to-br from-secondary/20 to-transparent blur-3xl"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50vw] h-[50vw] rounded-full bg-gradient-to-br from-[hsl(150,25%,36%)]/20 to-[hsl(150,71%,19%)]/10 blur-[90px]"
             animate={{
-              scale: [1, 1.3, 1],
-              opacity: [0.5, 0.8, 0.5],
+              scale: [1, 1.5, 1],
+              opacity: [0.2, 0.5, 0.2],
+              rotate: [0, 45, 0],
             }}
             transition={{
-              duration: 6,
+              duration: 20,
               repeat: Infinity,
               ease: "easeInOut",
               delay: 2,
@@ -70,7 +74,7 @@ export function MeshBackground({
           />
         </>
       )}
-      
+
       {/* Content */}
       <div className="relative z-10">
         {children}
