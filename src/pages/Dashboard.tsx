@@ -157,10 +157,6 @@ export default function Dashboard() {
           BACKGROUND LAYERS (Unified)
           ════════════════════════════════════════════════════════════════ */}
       <UnifiedBackground watermark="PAK FILER" />
-      {/* ════════════════════════════════════════════════════════════════
-          BACKGROUND LAYERS (Unified)
-          ════════════════════════════════════════════════════════════════ */}
-      <UnifiedBackground watermark="PAK FILER" />
 
 
       {/* ════════════════════════════════════════════════════════════════
